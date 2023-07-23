@@ -31,6 +31,17 @@ public enum OAuthProvider {
                 .provider("naver")
                 .attributes(response)
                 .build();
+    }),
+    KAKAO("kakao", (userNameAttributeName, attributes) -> {
+        Map<String, Object> account = (Map<String, Object>) attributes.get("kakao_account");
+
+        return OAuthAttributes.builder()
+                .email((String) account.get("email"))
+                .name((String) ((Map<String, Object>) account.get("profile")).get("nickname"))
+                .userNameAttributeName("id")
+                .attributes(attributes)
+                .provider("kakao")
+                .build();
     });
 
     private final String name;
