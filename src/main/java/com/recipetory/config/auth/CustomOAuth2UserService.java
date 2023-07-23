@@ -49,7 +49,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         return new DefaultOAuth2User(
                 Collections.singleton(loggedInUser.createAuthority()),
                 oAuthAttributes.getAttributes(),
-                userNameAttributeName);
+                oAuthAttributes.getUserNameAttributeName());
     }
 
     @Transactional

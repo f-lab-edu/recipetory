@@ -24,7 +24,6 @@ public class OAuthAttributes {
     public static OAuthAttributes of(String provider,
                                      String userNameAttributeName,
                                      Map<String,Object> attributes) {
-        System.out.println(attributes);
         OAuthProvider foundProvider = OAuthProvider.findProvider(provider);
         return foundProvider.convert(userNameAttributeName, attributes);
     }

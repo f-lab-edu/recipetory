@@ -6,6 +6,10 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import java.util.Arrays;
 import java.util.Map;
 
+/**
+ * oauth provider와
+ * 그에 맞는 attribute converter를 제공합니다.
+ * */
 @RequiredArgsConstructor
 public enum OAuthProvider {
     GOOGLE("google", (userNameAttributeName, attributes) -> {
@@ -15,6 +19,17 @@ public enum OAuthProvider {
                 .userNameAttributeName(userNameAttributeName)
                 .provider("google")
                 .attributes(attributes)
+                .build();
+    }),
+    NAVER("naver", (userNameAttributeName, attributes) -> {
+        Map<String, Object> response = (Map<String, Object>) attributes.get(userNameAttributeName);
+
+        return OAuthAttributes.builder()
+                .email((String) response.get("email"))
+                .name((String) response.get("nickname"))
+                .userNameAttributeName("id")
+                .provider("naver")
+                .attributes(response)
                 .build();
     });
 
