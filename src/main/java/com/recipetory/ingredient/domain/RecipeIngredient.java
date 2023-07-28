@@ -27,4 +27,6 @@ public class RecipeIngredient {
     @JoinColumn(name = "ingredient_id",
             nullable = false)
     private Ingredient ingredient;
+
+    private String amount;
 }

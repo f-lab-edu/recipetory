@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.Length;
 
 /**
  * RecipeIngredient relation 에 사용되는 DTO
@@ -21,6 +22,9 @@ public class IngredientDto {
     @NotNull
     @NotBlank
     private String name = "";
+
+    @Length(max = 10)
+    private String amount = "";
 
     public Ingredient toEntity() {
         return Ingredient.builder()

@@ -29,15 +29,15 @@ public class IngredientService {
     public List<RecipeIngredient> convertToRelationEntity(
             Recipe recipe,
             List<IngredientDto> ingredients) {
-        List<Ingredient> foundIngredients = ingredients.stream()
-                .map(dto ->
-                        saveOrFind(dto.getName()))
-                .toList();
-
-        return foundIngredients.stream().map(ingredient ->
-                        RecipeIngredient.builder()
-                                .recipe(recipe).ingredient(ingredient)
-                                .build())
+        return ingredients.stream()
+                .map(dto -> {
+                        Ingredient ingredient = saveOrFind(dto.getName());
+                        return RecipeIngredient.builder()
+                                .recipe(recipe)
+                                .ingredient(ingredient)
+                                .amount(dto.getAmount())
+                                .build();
+                })
                 .toList();
     }
 }
