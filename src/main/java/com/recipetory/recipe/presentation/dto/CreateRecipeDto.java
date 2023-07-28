@@ -10,6 +10,7 @@ import com.recipetory.step.presentation.dto.CreateStepDto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import org.hibernate.validator.constraints.Length;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +24,9 @@ public class CreateRecipeDto {
         private String title;
 
         // RecipeInfo
+        @Length(max = 1000)
         private String description = "";
+
         private CookingTime cookingTime = CookingTime.UNDEFINED;
         private Difficulty difficulty = Difficulty.UNDEFINED;
         private Serving serving = Serving.UNDEFINED;

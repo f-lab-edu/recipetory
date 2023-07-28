@@ -2,12 +2,10 @@ package com.recipetory.recipe.presentation;
 
 import com.recipetory.config.auth.argumentresolver.LogInUser;
 import com.recipetory.config.auth.dto.SessionUser;
-import com.recipetory.ingredient.application.IngredientService;
 import com.recipetory.ingredient.presentation.dto.IngredientDto;
 import com.recipetory.recipe.application.RecipeService;
 import com.recipetory.recipe.domain.Recipe;
 import com.recipetory.recipe.presentation.dto.CreateRecipeDto;
-import com.recipetory.step.presentation.dto.CreateStepDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +23,6 @@ import java.util.List;
 @Slf4j
 public class RecipeController {
     private final RecipeService recipeService;
-    private final IngredientService ingredientService;
 
     @PostMapping
     public ResponseEntity<CreateRecipeDto.Response> postRecipe(
@@ -39,17 +36,7 @@ public class RecipeController {
                 requestIngredients,
                 logInUser.getEmail());
 
-        CreateRecipeDto.Response response = CreateRecipeDto.Response.builder()
-                        .title(created.getTitle())
-                        .recipeInfo(created.getRecipeInfo())
-                        .ingredients(created.getIngredients().stream()
-                                .map(IngredientDto::fromEntity)
-                                .toList())
-                        .steps(created.getSteps().stream()
-                                .map(CreateStepDto.Response::fromEntity)
-                                .toList())
-                .build();
-
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(
+                CreateRecipeDto.Response.fromEntity(created));
     }
 }

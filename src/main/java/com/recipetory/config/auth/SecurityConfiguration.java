@@ -1,8 +1,10 @@
 package com.recipetory.config.auth;
 
+import com.recipetory.user.domain.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
@@ -23,6 +25,7 @@ public class SecurityConfiguration {
         http
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(mvc.pattern("/check")).authenticated()
+                        .requestMatchers(mvc.pattern(HttpMethod.POST,"/recipe")).hasAuthority(Role.USER.getKey())
                         .anyRequest().permitAll())
                 // for h2-console
                 .headers(headers -> headers.frameOptions(option -> option.disable()))
