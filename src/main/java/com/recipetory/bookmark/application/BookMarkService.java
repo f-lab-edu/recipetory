@@ -28,7 +28,9 @@ public class BookMarkService {
         User user = getUserByEmail(logInEmail);
         Recipe recipe = getRecipeById(recipeId);
 
-        verifyUserNotAuthor(user,recipe);
+        if (recipe.isSameAuthor(user)) {
+            throw new CannotBookMarkException(user.getId(),recipe.getId());
+        }
 
         return bookMarkRepository.findByBookMarkerAndRecipe(user, recipe)
                 .orElse(bookMarkRepository.save(BookMark.builder()
@@ -80,13 +82,5 @@ public class BookMarkService {
         return recipeRepository.findById(recipeId)
                 .orElseThrow(() -> new RecipeNotFoundException(
                         String.valueOf(recipeId)));
-    }
-
-    @Transactional
-    public void verifyUserNotAuthor(User user, Recipe recipe) {
-        if (user == recipe.getAuthor()) {
-            throw new CannotBookMarkException(
-                    user.getId(),recipe.getId());
-        }
     }
 }
