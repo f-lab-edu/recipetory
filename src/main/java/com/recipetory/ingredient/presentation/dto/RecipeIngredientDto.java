@@ -20,6 +20,7 @@ import org.hibernate.validator.constraints.Length;
 public class RecipeIngredientDto {
     @NotNull(message = "재료 이름이 필요합니다.")
     @NotBlank(message = "재료 이름이 공란이어선 안됩니다.")
+    @Length(max = 10)
     private String name = "";
 
     @Length(max = 10)
