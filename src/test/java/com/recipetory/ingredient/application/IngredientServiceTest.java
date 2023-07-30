@@ -1,7 +1,9 @@
 package com.recipetory.ingredient.application;
 
+import com.recipetory.TestRepositoryConfig;
 import com.recipetory.ingredient.domain.Ingredient;
 import com.recipetory.ingredient.domain.IngredientRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,13 +13,17 @@ import org.springframework.context.annotation.Import;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
-@Import(IngredientTestConfig.class)
+@Import(TestRepositoryConfig.class)
 public class IngredientServiceTest {
     @Autowired
     private IngredientRepository ingredientRepository;
 
-    @Autowired
     private IngredientService ingredientService;
+
+    @BeforeEach
+    public void setUp() {
+        ingredientService = new IngredientService(ingredientRepository);
+    }
 
     @Test
     @DisplayName("존재하지 않는 재료는 새로 생성된다.")
