@@ -36,6 +36,7 @@ public class IngredientDto {
             RecipeIngredient recipeIngredient) {
         return IngredientDto.builder()
                 .name(recipeIngredient.getIngredient().getName())
+                .amount(recipeIngredient.getAmount())
                 .build();
     }
 }
