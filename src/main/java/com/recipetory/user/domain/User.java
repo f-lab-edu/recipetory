@@ -51,9 +51,9 @@ public class User {
         return new SimpleGrantedAuthority(role.getKey());
     }
 
-    public void verifyUserHasRole(Role role) {
-        if (this.role!=role) {
-            throw new InvalidUserRoleException(role);
+    public void verifyUserHasRole(Role requiredRole) {
+        if (role != requiredRole) {
+            throw new InvalidUserRoleException(id, role, requiredRole);
         }
     }
 }

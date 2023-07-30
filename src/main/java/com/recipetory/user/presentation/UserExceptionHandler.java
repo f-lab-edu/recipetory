@@ -15,7 +15,11 @@ public class UserExceptionHandler {
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<ExceptionResponse> handleUserNotFoundException(
             UserNotFoundException e) {
-        log.info("UserNotFoundException for key {}", e.getKey());
+
+        log.info("UserNotFoundException!! - " +
+                "key type: {}, key: {}",
+                e.getUserKeyType(),e.getKey());
+
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(new ExceptionResponse("존재하지 않는 유저에 대한 요청입니다."));
     }
@@ -23,7 +27,11 @@ public class UserExceptionHandler {
     @ExceptionHandler(InvalidUserRoleException.class)
     public ResponseEntity<ExceptionResponse> handleInvalidUserRoleException(
             InvalidUserRoleException e) {
-        log.info("InvalidUserException for role {}", e.getRequiredRole());
+        
+        log.info("InvalidUserRoleException!! - " +
+                "userId: {}, currentRole: {}, requiredRole: {}",
+                e.getUserId(), e.getCurrentRole(), e.getRequiredRole());
+
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
                 .body(new ExceptionResponse("권한이 없는 요청입니다."));
     }

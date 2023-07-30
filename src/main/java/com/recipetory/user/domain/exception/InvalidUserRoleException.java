@@ -7,5 +7,7 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public class InvalidUserRoleException extends RuntimeException {
+    private Long userId;
+    private Role currentRole;
     private Role requiredRole;
 }

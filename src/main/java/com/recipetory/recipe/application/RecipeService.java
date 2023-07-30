@@ -7,6 +7,7 @@ import com.recipetory.recipe.domain.Recipe;
 import com.recipetory.recipe.domain.RecipeRepository;
 import com.recipetory.user.domain.Role;
 import com.recipetory.user.domain.User;
+import com.recipetory.user.domain.UserKeyType;
 import com.recipetory.user.domain.UserRepository;
 import com.recipetory.user.domain.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -48,6 +49,7 @@ public class RecipeService {
     @Transactional
     private User findUserByEmail(String email) {
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new UserNotFoundException(email));
+                .orElseThrow(() -> new UserNotFoundException(
+                        UserKeyType.EMAIL, email));
     }
 }
