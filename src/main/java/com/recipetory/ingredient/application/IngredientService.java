@@ -3,7 +3,7 @@ package com.recipetory.ingredient.application;
 import com.recipetory.ingredient.domain.Ingredient;
 import com.recipetory.ingredient.domain.IngredientRepository;
 import com.recipetory.ingredient.domain.RecipeIngredient;
-import com.recipetory.ingredient.presentation.dto.IngredientDto;
+import com.recipetory.ingredient.presentation.dto.RecipeIngredientDto;
 import com.recipetory.recipe.domain.Recipe;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -28,7 +28,7 @@ public class IngredientService {
     @Transactional
     public List<RecipeIngredient> convertToRelationEntity(
             Recipe recipe,
-            List<IngredientDto> ingredients) {
+            List<RecipeIngredientDto> ingredients) {
         return ingredients.stream()
                 .map(dto -> {
                         Ingredient ingredient = saveOrFind(dto.getName());

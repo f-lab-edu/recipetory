@@ -2,7 +2,7 @@ package com.recipetory.recipe.application;
 
 import com.recipetory.ingredient.application.IngredientService;
 import com.recipetory.ingredient.domain.RecipeIngredient;
-import com.recipetory.ingredient.presentation.dto.IngredientDto;
+import com.recipetory.ingredient.presentation.dto.RecipeIngredientDto;
 import com.recipetory.recipe.domain.Recipe;
 import com.recipetory.recipe.domain.RecipeRepository;
 import com.recipetory.user.domain.Role;
@@ -26,7 +26,7 @@ public class RecipeService {
 
     @Transactional
     public Recipe createRecipe(Recipe recipe,
-                               List<IngredientDto> ingredients,
+                               List<RecipeIngredientDto> ingredients,
                                String authorEmail) {
         // 1. validate user role
         User author = findUserByEmail(authorEmail);

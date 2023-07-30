@@ -17,7 +17,7 @@ import org.hibernate.validator.constraints.Length;
 @Getter
 @Builder
 @NoArgsConstructor
-public class IngredientDto {
+public class RecipeIngredientDto {
     @NotNull(message = "재료 이름이 필요합니다.")
     @NotBlank(message = "재료 이름이 공란이어선 안됩니다.")
     private String name = "";
@@ -25,15 +25,9 @@ public class IngredientDto {
     @Length(max = 10)
     private String amount = "";
 
-    public Ingredient toEntity() {
-        return Ingredient.builder()
-                .name(name)
-                .build();
-    }
-
-    public static IngredientDto fromEntity(
+    public static RecipeIngredientDto fromEntity(
             RecipeIngredient recipeIngredient) {
-        return IngredientDto.builder()
+        return RecipeIngredientDto.builder()
                 .name(recipeIngredient.getIngredient().getName())
                 .amount(recipeIngredient.getAmount())
                 .build();

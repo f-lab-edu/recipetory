@@ -1,9 +1,6 @@
 package com.recipetory.recipe.presentation.dto;
 
-import com.recipetory.ingredient.domain.Ingredient;
-import com.recipetory.ingredient.domain.RecipeIngredient;
-import com.recipetory.ingredient.presentation.dto.CreateIngredientDto;
-import com.recipetory.ingredient.presentation.dto.IngredientDto;
+import com.recipetory.ingredient.presentation.dto.RecipeIngredientDto;
 import com.recipetory.recipe.domain.*;
 import com.recipetory.step.domain.Step;
 import com.recipetory.step.presentation.dto.CreateStepDto;
@@ -34,7 +31,7 @@ public class CreateRecipeDto {
         // steps & ingredients (relation)
         private List<CreateStepDto.Request> steps
                 = new ArrayList<>();
-        private List<IngredientDto> ingredients
+        private List<RecipeIngredientDto> ingredients
                 = new ArrayList<>();
 
         // TODO : Tag
@@ -75,7 +72,7 @@ public class CreateRecipeDto {
         private RecipeInfo recipeInfo;
 
         private List<CreateStepDto.Response> steps;
-        private List<IngredientDto> ingredients;
+        private List<RecipeIngredientDto> ingredients;
 
         public static CreateRecipeDto.Response fromEntity(Recipe recipe) {
             RecipeInfo recipeInfo = recipe.getRecipeInfo();
@@ -83,8 +80,8 @@ public class CreateRecipeDto {
             List<CreateStepDto.Response> steps = recipe.getSteps().stream()
                     .map(CreateStepDto.Response::fromEntity)
                     .toList();
-            List<IngredientDto> ingredients = recipe.getIngredients().stream()
-                    .map(IngredientDto::fromEntity)
+            List<RecipeIngredientDto> ingredients = recipe.getIngredients().stream()
+                    .map(RecipeIngredientDto::fromEntity)
                     .toList();
 
             return Response.builder()

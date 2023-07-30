@@ -2,7 +2,7 @@ package com.recipetory.recipe.presentation;
 
 import com.recipetory.config.auth.argumentresolver.LogInUser;
 import com.recipetory.config.auth.dto.SessionUser;
-import com.recipetory.ingredient.presentation.dto.IngredientDto;
+import com.recipetory.ingredient.presentation.dto.RecipeIngredientDto;
 import com.recipetory.recipe.application.RecipeService;
 import com.recipetory.recipe.domain.Recipe;
 import com.recipetory.recipe.presentation.dto.CreateRecipeDto;
@@ -29,7 +29,7 @@ public class RecipeController {
             @RequestBody @Valid CreateRecipeDto.Request request,
             @LogInUser SessionUser logInUser) {
         Recipe requestRecipe = request.toEntity();
-        List<IngredientDto> requestIngredients = request.getIngredients();
+        List<RecipeIngredientDto> requestIngredients = request.getIngredients();
 
         Recipe created = recipeService.createRecipe(
                 requestRecipe,

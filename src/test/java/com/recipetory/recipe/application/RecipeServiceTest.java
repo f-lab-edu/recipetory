@@ -2,7 +2,7 @@ package com.recipetory.recipe.application;
 
 import com.recipetory.ingredient.domain.IngredientRepository;
 import com.recipetory.ingredient.domain.RecipeIngredientRepository;
-import com.recipetory.ingredient.presentation.dto.IngredientDto;
+import com.recipetory.ingredient.presentation.dto.RecipeIngredientDto;
 import com.recipetory.recipe.domain.Recipe;
 import com.recipetory.recipe.domain.RecipeRepository;
 import com.recipetory.recipe.domain.RecipeStatistics;
@@ -90,17 +90,17 @@ public class RecipeServiceTest {
                 .steps(new ArrayList<>())
                 .recipeStatistics(new RecipeStatistics())
                 .build();
-        List<IngredientDto> ingredientDtos = Arrays.asList(
-                IngredientDto.builder().name("재료1").build(),
-                IngredientDto.builder().name("재료2").build(),
-                IngredientDto.builder().name("재료3").build()
+        List<RecipeIngredientDto> recipeIngredientDtos = Arrays.asList(
+                RecipeIngredientDto.builder().name("재료1").build(),
+                RecipeIngredientDto.builder().name("재료2").build(),
+                RecipeIngredientDto.builder().name("재료3").build()
         );
 
         // when : recipe create가 일어난다면,
-        recipeService.createRecipe(recipe,ingredientDtos,testEmail);
+        recipeService.createRecipe(recipe, recipeIngredientDtos,testEmail);
 
         // then : ingredient의 name을 가진 ingredient가 DB에 존재한다.
-        ingredientDtos.stream().map(IngredientDto::getName)
+        recipeIngredientDtos.stream().map(RecipeIngredientDto::getName)
                 .forEach(name -> {
                     Assertions.assertNotNull(
                             ingredientRepository.findByName(name));
@@ -134,10 +134,10 @@ public class RecipeServiceTest {
                 .name("USER").email(testEmail).role(Role.USER)
                 .build());
 
-        List<IngredientDto> ingredientDtos = Arrays.asList(
-                IngredientDto.builder().name("재료1").build(),
-                IngredientDto.builder().name("재료2").build(),
-                IngredientDto.builder().name("재료3").build());
+        List<RecipeIngredientDto> recipeIngredientDtos = Arrays.asList(
+                RecipeIngredientDto.builder().name("재료1").build(),
+                RecipeIngredientDto.builder().name("재료2").build(),
+                RecipeIngredientDto.builder().name("재료3").build());
 
         List<Step> steps = Arrays.asList(
                 stepRepository.save(Step.builder().description("단계1").build()),
@@ -150,6 +150,6 @@ public class RecipeServiceTest {
                 .recipeStatistics(new RecipeStatistics())
                 .build();
 
-        return recipeService.createRecipe(recipe,ingredientDtos,testEmail);
+        return recipeService.createRecipe(recipe, recipeIngredientDtos,testEmail);
     }
 }
