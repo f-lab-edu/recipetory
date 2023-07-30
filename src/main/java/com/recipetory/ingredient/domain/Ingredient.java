@@ -18,13 +18,14 @@ public class Ingredient {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column
+    @Column(nullable = false,
+            length = 20)
     private String name;
 
-    @Column
+    @Column(length = 255)
     private String imageUrl;
 
-    @Column
+    @Column(length = 100)
     @Builder.Default
     private String description = "";
 

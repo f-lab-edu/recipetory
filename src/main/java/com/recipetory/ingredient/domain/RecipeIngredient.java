@@ -15,6 +15,7 @@ import lombok.NoArgsConstructor;
 @Getter
 public class RecipeIngredient {
     @Id
+    @Column
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -28,5 +29,6 @@ public class RecipeIngredient {
             nullable = false)
     private Ingredient ingredient;
 
+    @Column(length = 10)
     private String amount;
 }

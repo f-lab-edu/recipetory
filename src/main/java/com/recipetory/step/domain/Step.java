@@ -17,8 +17,10 @@ public class Step {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private int stepNumber;
 
+    @Column(length = 2000)
     private String description;
 
     @ManyToOne(targetEntity = Recipe.class)

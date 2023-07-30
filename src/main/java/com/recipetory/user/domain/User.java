@@ -23,13 +23,15 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false,
+            length = 50)
     private String email;
 
-    @Column(nullable = false)
+    @Column(nullable = false,
+            length = 15)
     private String name;
 
-    @Column
+    @Column(length = 255)
     private String imageUrl;
 
     @OneToMany(targetEntity = Recipe.class,
@@ -37,11 +39,12 @@ public class User {
     private List<Recipe> recipes;
 
     // OAuth2
-    @Column
+    @Column(length = 15)
     private String provider;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(nullable = false,
+            length = 15)
     private Role role;
 
     public GrantedAuthority createAuthority() {

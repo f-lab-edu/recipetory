@@ -22,7 +22,8 @@ public class Recipe extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false,
+            length = 30)
     private String title;
 
     @JoinColumn(name = "author_id",

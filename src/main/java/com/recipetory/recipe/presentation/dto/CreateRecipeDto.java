@@ -19,8 +19,8 @@ public class CreateRecipeDto {
     @Getter
     @NoArgsConstructor
     public static class Request {
-        @NotNull
-        @NotBlank
+        @NotNull(message = "레시피 제목을 입력해야합니다.")
+        @NotBlank(message = "레시피 제목은 공란이어선 안됩니다.")
         private String title;
 
         // RecipeInfo
@@ -60,11 +60,6 @@ public class CreateRecipeDto {
                     .recipeStatistics(new RecipeStatistics()) // statistics : 항상 초기값
                     .steps(steps)
                     .build();
-        }
-
-        public List<Ingredient> toIngredientEntities() {
-            return ingredients.stream()
-                    .map(IngredientDto::toEntity).toList();
         }
     }
 
