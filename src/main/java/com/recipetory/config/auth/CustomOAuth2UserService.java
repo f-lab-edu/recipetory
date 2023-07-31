@@ -6,6 +6,9 @@ import com.recipetory.user.domain.User;
 import com.recipetory.user.domain.UserRepository;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
@@ -16,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @Service
@@ -47,7 +51,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 
         // 6. security context에 등록할 oauth2 user return
         return new DefaultOAuth2User(
-                Collections.singleton(loggedInUser.createAuthority()),
+                Collections.singleton(loggedInUser.getAuthority()),
                 oAuthAttributes.getAttributes(),
                 oAuthAttributes.getUserNameAttributeName());
     }
@@ -56,5 +60,22 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
     private User saveIfNew(OAuthAttributes oAuthAttributes) {
         return userRepository.findByEmail(oAuthAttributes.getEmail())
                 .orElseGet(() -> userRepository.save(oAuthAttributes.toEntity()));
+    }
+
+    public void updateContextUser(User user) {
+        // 1. 현재 security context의 oauth user 가져오기
+        OAuth2AuthenticationToken oAuth = (OAuth2AuthenticationToken)
+                SecurityContextHolder.getContext().getAuthentication();
+        OAuth2User principal = oAuth.getPrincipal();
+
+        // 2. new auth token 생성 (role만 업데이트)
+        Authentication newAuth = new OAuth2AuthenticationToken(
+                principal,
+                Collections.singleton(user.getAuthority()),
+                oAuth.getAuthorizedClientRegistrationId());
+        SecurityContextHolder.getContext().setAuthentication(newAuth);
+
+        // 3. 세션 설정
+        httpSession.setAttribute("user", SessionUser.fromEntity(user));
     }
 }

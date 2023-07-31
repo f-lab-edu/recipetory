@@ -2,6 +2,7 @@ package com.recipetory.user.domain;
 
 import com.recipetory.recipe.domain.Recipe;
 import com.recipetory.user.domain.exception.InvalidUserRoleException;
+import com.recipetory.utils.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,7 +19,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "member")
-public class User {
+public class User extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -47,7 +48,7 @@ public class User {
             length = 15)
     private Role role;
 
-    public GrantedAuthority createAuthority() {
+    public GrantedAuthority getAuthority() {
         return new SimpleGrantedAuthority(role.getKey());
     }
 
@@ -55,5 +56,10 @@ public class User {
         if (role != requiredRole) {
             throw new InvalidUserRoleException(id, role, requiredRole);
         }
+    }
+
+    public void editName(String name) {
+        this.name = name;
+        this.role = Role.USER;
     }
 }
