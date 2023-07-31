@@ -19,11 +19,15 @@ public class RecipeStatistics {
 
     @Column
     private int bookMarkCount;
-
+    
     public void addBookMarkCount() {
         this.bookMarkCount += 1;
     }
     public void subtractBookMarkCount() {
         this.bookMarkCount -= 1;
+    }
+
+    public String getRatingFormat() {
+        return String.format("%.1f",ratings / 10.0);
     }
 }
