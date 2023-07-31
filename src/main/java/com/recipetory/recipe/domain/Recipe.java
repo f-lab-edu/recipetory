@@ -59,4 +59,11 @@ public class Recipe extends BaseTimeEntity {
     public boolean isSameAuthor(User user) {
         return author.getId().equals(user.getId());
     }
+
+    public void addBookMarkCount() {
+        recipeStatistics.addBookMarkCount();
+    }
+    public void subtractBookMarkCount() {
+        recipeStatistics.subtractBookMarkCount();
+    }
 }

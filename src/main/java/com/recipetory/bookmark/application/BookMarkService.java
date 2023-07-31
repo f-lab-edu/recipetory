@@ -33,9 +33,12 @@ public class BookMarkService {
         }
 
         return bookMarkRepository.findByBookMarkerAndRecipe(user, recipe)
-                .orElse(bookMarkRepository.save(BookMark.builder()
+                .orElseGet(() -> {
+                    recipe.addBookMarkCount();
+                    return bookMarkRepository.save(BookMark.builder()
                         .bookMarker(user).recipe(recipe)
-                        .build()));
+                        .build());
+                });
     }
 
     @Transactional(readOnly = true)
@@ -59,7 +62,10 @@ public class BookMarkService {
         Recipe foundRecipe = getRecipeById(recipeId);
 
         bookMarkRepository.findByBookMarkerAndRecipe(foundUser, foundRecipe)
-                .ifPresent(bookMarkRepository::deleteBookMark);
+                .ifPresent(bookMark -> {
+                    bookMarkRepository.deleteBookMark(bookMark);
+                    foundRecipe.subtractBookMarkCount();
+                });
     }
 
 
