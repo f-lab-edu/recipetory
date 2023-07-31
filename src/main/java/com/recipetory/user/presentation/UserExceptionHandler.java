@@ -16,7 +16,7 @@ public class UserExceptionHandler {
     public ResponseEntity<ExceptionResponse> handleUserNotFoundException(
             UserNotFoundException e) {
 
-        log.info("UserNotFoundException!! - " +
+        log.warn("UserNotFoundException!! - " +
                 "key type: {}, key: {}",
                 e.getUserKeyType(),e.getKey());
 
@@ -28,7 +28,7 @@ public class UserExceptionHandler {
     public ResponseEntity<ExceptionResponse> handleInvalidUserRoleException(
             InvalidUserRoleException e) {
         
-        log.info("InvalidUserRoleException!! - " +
+        log.warn("InvalidUserRoleException!! - " +
                 "userId: {}, currentRole: {}, requiredRole: {}",
                 e.getUserId(), e.getCurrentRole(), e.getRequiredRole());
 

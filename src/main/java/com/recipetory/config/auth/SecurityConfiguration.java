@@ -26,6 +26,8 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(mvc.pattern("/check")).authenticated()
                         .requestMatchers(mvc.pattern(HttpMethod.POST,"/recipe")).hasAuthority(Role.USER.getKey())
+                        .requestMatchers(mvc.pattern(HttpMethod.POST,"/bookmark/**")).authenticated()
+                        .requestMatchers(mvc.pattern(HttpMethod.DELETE,"/bookmark/**")).authenticated()
                         .anyRequest().permitAll())
                 // for h2-console
                 .headers(headers -> headers.frameOptions(option -> option.disable()))

@@ -44,7 +44,7 @@ public class GlobalExceptionHandler {
             BindException.class
     })
     public ResponseEntity<ExceptionResponse> handleMvcException(Exception e) {
-        log.info("Mvc Exception", e);
+        log.warn("Mvc Exception", e);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ExceptionResponse(
                         e.getMessage()));

@@ -1,0 +1,47 @@
+package com.recipetory.bookmark.presentation;
+
+import com.recipetory.bookmark.application.BookMarkService;
+import com.recipetory.bookmark.domain.BookMark;
+import com.recipetory.bookmark.presentation.dto.BookMarkDto;
+import com.recipetory.bookmark.presentation.dto.BookMarkListDto;
+import com.recipetory.config.auth.argumentresolver.LogInUser;
+import com.recipetory.config.auth.dto.SessionUser;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("/bookmark")
+public class BookMarkController {
+    private final BookMarkService bookMarkService;
+
+    @GetMapping("/{recipeId}")
+    public ResponseEntity<BookMarkListDto> findBookMarksOfRecipe(
+            @PathVariable("recipeId") Long recipeId) {
+        List<BookMark> foundBookMarks = bookMarkService.findBookMarkByRecipeId(recipeId);
+        BookMarkListDto bookMarkListDto = BookMarkListDto.fromEntityList(foundBookMarks);
+
+        return ResponseEntity.ok(bookMarkListDto);
+    }
+
+    @PostMapping("/{recipeId}")
+    public ResponseEntity<BookMarkDto> addBookMark(
+            @LogInUser SessionUser logInUser,
+            @PathVariable("recipeId") Long recipeId) {
+        BookMark saved = bookMarkService.addBookMark(
+                logInUser.getEmail(), recipeId);
+
+        return ResponseEntity.ok(BookMarkDto.fromEntity(saved));
+    }
+
+    @DeleteMapping("/{recipeId}")
+    public ResponseEntity<Void> deleteBookMark(
+            @LogInUser SessionUser logInUser,
+            @PathVariable("recipeId") Long recipeId) {
+        bookMarkService.deleteBookMark(logInUser.getEmail(),recipeId);
+        return ResponseEntity.noContent().build();
+    }
+}

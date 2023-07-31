@@ -22,4 +22,9 @@ public class RecipeRepositoryImpl implements RecipeRepository {
     public Recipe save(Recipe recipe) {
         return recipeJpaRepository.save(recipe);
     }
+
+    @Override
+    public Optional<Recipe> findById(Long id) {
+        return recipeJpaRepository.findById(id);
+    }
 }

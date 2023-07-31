@@ -1,16 +1,16 @@
 package com.recipetory.recipe.domain;
 
+import com.recipetory.bookmark.domain.exception.CannotBookMarkException;
 import com.recipetory.ingredient.domain.RecipeIngredient;
 import com.recipetory.step.domain.Step;
 import com.recipetory.user.domain.User;
+import com.recipetory.user.domain.exception.NotOwnerException;
 import com.recipetory.utils.BaseTimeEntity;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
+import java.util.Objects;
 
 @Getter
 @NoArgsConstructor
@@ -54,5 +54,16 @@ public class Recipe extends BaseTimeEntity {
                                   List<RecipeIngredient> ingredients) {
         this.author = author;
         this.ingredients = ingredients;
+    }
+
+    public boolean isSameAuthor(User user) {
+        return author.getId().equals(user.getId());
+    }
+
+    public void addBookMarkCount() {
+        recipeStatistics.addBookMarkCount();
+    }
+    public void subtractBookMarkCount() {
+        recipeStatistics.subtractBookMarkCount();
     }
 }
