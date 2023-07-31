@@ -14,7 +14,7 @@ public class RecipeExceptionHandler {
     @ExceptionHandler(RecipeNotFoundException.class)
     public ResponseEntity<ExceptionResponse> handleRecipeNotFoundException(
             RecipeNotFoundException e) {
-        log.info("RecipeNotFoundException for key {} 발생", e.getKey());
+        log.warn("RecipeNotFoundException for key {} 발생", e.getKey());
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(new ExceptionResponse("존재하지 않는 레시피입니다."));
     }

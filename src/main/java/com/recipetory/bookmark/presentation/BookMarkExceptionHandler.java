@@ -14,7 +14,7 @@ public class BookMarkExceptionHandler {
     @ExceptionHandler(CannotBookMarkException.class)
     public ResponseEntity<ExceptionResponse> handleCannotBookMarkException(
             CannotBookMarkException e) {
-        log.info(e.getMessage());
+        log.warn(e.getMessage());
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ExceptionResponse("사용자 본인의 레시피는 북마크할 수 없습니다."));
