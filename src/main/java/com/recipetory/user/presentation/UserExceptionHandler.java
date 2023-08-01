@@ -1,5 +1,6 @@
 package com.recipetory.user.presentation;
 
+import com.recipetory.user.domain.exception.CannotFollowException;
 import com.recipetory.user.domain.exception.InvalidUserRoleException;
 import com.recipetory.user.domain.exception.UserNotFoundException;
 import com.recipetory.utils.exception.ExceptionResponse;
@@ -34,5 +35,15 @@ public class UserExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
                 .body(new ExceptionResponse("권한이 없는 요청입니다."));
+    }
+
+    @ExceptionHandler(CannotFollowException.class)
+    public ResponseEntity<ExceptionResponse> handleCannotFollowException(
+            CannotFollowException e) {
+        log.warn("{} cannot follow {}",
+                e.getFollowingId(), e.getFollowedId());
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ExceptionResponse("팔로우 할 수 없습니다."));
     }
 }
