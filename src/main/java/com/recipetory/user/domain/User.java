@@ -2,6 +2,7 @@ package com.recipetory.user.domain;
 
 import com.recipetory.recipe.domain.Recipe;
 import com.recipetory.user.domain.exception.InvalidUserRoleException;
+import com.recipetory.user.domain.follow.Follow;
 import com.recipetory.utils.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -38,6 +39,18 @@ public class User extends BaseTimeEntity {
     @OneToMany(targetEntity = Recipe.class,
             mappedBy = "author")
     private List<Recipe> recipes;
+
+    // 이 유저가 팔로잉하는 사람들
+    @OneToMany(targetEntity = Follow.class,
+            mappedBy = "followed",
+            orphanRemoval = true)
+    private List<Follow> followings;
+
+    // 이 유저를 팔로우하는 사람들
+    @OneToMany(targetEntity = Follow.class,
+            mappedBy = "following",
+            orphanRemoval = true)
+    private List<Follow> followers;
 
     // OAuth2
     @Column(length = 15)

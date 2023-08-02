@@ -6,9 +6,11 @@ import com.recipetory.bookmark.presentation.dto.BookMarkListDto;
 import com.recipetory.config.auth.CustomOAuth2UserService;
 import com.recipetory.config.auth.argumentresolver.LogInUser;
 import com.recipetory.config.auth.dto.SessionUser;
+import com.recipetory.user.application.FollowService;
 import com.recipetory.user.application.UserService;
 import com.recipetory.user.domain.User;
 import com.recipetory.user.presentation.dto.EditUserDto;
+import com.recipetory.user.presentation.dto.FollowDto;
 import com.recipetory.user.presentation.dto.ProfileDto;
 import com.recipetory.user.presentation.dto.UserHomeDto;
 import jakarta.validation.Valid;
@@ -23,6 +25,7 @@ import java.util.List;
 public class UserController {
     private final BookMarkService bookMarkService;
     private final UserService userService;
+    private final FollowService followService;
     private final CustomOAuth2UserService oAuth2UserService;
 
     // path variable의 user information
@@ -70,5 +73,37 @@ public class UserController {
                         .id(edited.getId())
                         .oldName(oldName).newName(newName).
                         build());
+    }
+
+    @GetMapping("/{userId}/followers")
+    public ResponseEntity<FollowDto> showFollowers(
+            @PathVariable("userId") Long userId) {
+        List<User> followers = followService.getFollowers(userId);
+
+        return ResponseEntity.ok(FollowDto.fromEntityList(followers));
+    }
+
+    @GetMapping("/{userId}/following")
+    public ResponseEntity<FollowDto> showFollowing(
+            @PathVariable("userId") Long userId) {
+        List<User> followings = followService.getFollowings(userId);
+
+        return ResponseEntity.ok(FollowDto.fromEntityList(followings));
+    }
+
+    @PostMapping("/follow/{userId}")
+    public ResponseEntity<Void> follow(
+            @LogInUser SessionUser logInUser,
+            @PathVariable("userId") Long userId) {
+        followService.follow(logInUser.getEmail(), userId);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/follow/{userId}")
+    public ResponseEntity<Void> unfollow(
+            @LogInUser SessionUser logInUser,
+            @PathVariable("userId") Long userId) {
+        followService.unFollow(logInUser.getEmail(), userId);
+        return ResponseEntity.ok().build();
     }
 }

@@ -13,6 +13,9 @@ import com.recipetory.recipe.domain.RecipeRepository;
 import com.recipetory.recipe.infrastructure.RecipeJpaRepository;
 import com.recipetory.recipe.infrastructure.RecipeRepositoryImpl;
 import com.recipetory.user.domain.UserRepository;
+import com.recipetory.user.domain.follow.FollowRepository;
+import com.recipetory.user.infrastructure.FollowJpaRepository;
+import com.recipetory.user.infrastructure.FollowRepositoryImpl;
 import com.recipetory.user.infrastructure.UserJpaRepository;
 import com.recipetory.user.infrastructure.UserRepositoryImpl;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -47,5 +50,11 @@ public class TestRepositoryConfig {
     public RecipeIngredientRepository recipeIngredientRepository(
             RecipeIngredientJpaRepository recipeIngredientJpaRepository) {
         return new RecipeIngredientRepositoryImpl(recipeIngredientJpaRepository);
+    }
+
+    @Bean
+    public FollowRepository followRepository(
+            FollowJpaRepository followJpaRepository) {
+        return new FollowRepositoryImpl(followJpaRepository);
     }
 }
