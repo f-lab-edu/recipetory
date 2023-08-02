@@ -51,7 +51,6 @@ public class FollowServiceTest {
         Follow foundFollow = followRepository.findByFollowingAndFollowed(
                 user1, user2).get();
 
-        System.out.println(foundFollow.getCreatedAt());
         // then : 모든 필드가 잘 설정되었다.
         assertNotNull(foundFollow);
         assertEquals(foundFollow.getFollowing(), user1);
