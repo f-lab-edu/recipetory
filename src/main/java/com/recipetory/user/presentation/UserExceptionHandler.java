@@ -2,6 +2,7 @@ package com.recipetory.user.presentation;
 
 import com.recipetory.user.domain.exception.CannotFollowException;
 import com.recipetory.user.domain.exception.InvalidUserRoleException;
+import com.recipetory.user.domain.exception.NotOwnerException;
 import com.recipetory.user.domain.exception.UserNotFoundException;
 import com.recipetory.utils.exception.ExceptionResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +33,15 @@ public class UserExceptionHandler {
         log.warn("InvalidUserRoleException!! - " +
                 "userId: {}, currentRole: {}, requiredRole: {}",
                 e.getUserId(), e.getCurrentRole(), e.getRequiredRole());
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(new ExceptionResponse("권한이 없는 요청입니다."));
+    }
+
+    @ExceptionHandler(NotOwnerException.class)
+    public ResponseEntity<ExceptionResponse> handleNotOwnerException(
+            NotOwnerException e) {
+        log.warn("NotOwnerException - {}", e.getMessage() , e);
 
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
                 .body(new ExceptionResponse("권한이 없는 요청입니다."));

@@ -29,6 +29,12 @@ public class SecurityConfiguration {
                         .requestMatchers(mvc.pattern(HttpMethod.POST,"/recipe")).hasAuthority(Role.USER.getKey())
                         .requestMatchers(mvc.pattern(HttpMethod.POST,"/bookmark/**")).authenticated()
                         .requestMatchers(mvc.pattern(HttpMethod.DELETE,"/bookmark/**")).authenticated()
+                        .requestMatchers(mvc.pattern("/follow/**")).authenticated()
+                        // 조회(GET)는 permitAll, 나머지는 authenticated()
+                        .requestMatchers(mvc.pattern(HttpMethod.GET,"/comments/**")).permitAll()
+                        .requestMatchers(mvc.pattern("/comments/**")).authenticated()
+                        .requestMatchers(mvc.pattern(HttpMethod.GET,"/reviews/**")).permitAll()
+                        .requestMatchers(mvc.pattern("/reviews/**")).authenticated()
                         .anyRequest().permitAll())
                 // for h2-console
                 .headers(headers -> headers.frameOptions(option -> option.disable()))
