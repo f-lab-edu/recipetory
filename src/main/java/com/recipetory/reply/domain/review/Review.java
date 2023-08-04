@@ -1,7 +1,7 @@
-package com.recipetory.reply.domain.comment;
+package com.recipetory.reply.domain.review;
 
 import com.recipetory.recipe.domain.Recipe;
-import com.recipetory.reply.presentation.comment.dto.UpdateCommentDto;
+import com.recipetory.reply.presentation.review.dto.UpdateReviewDto;
 import com.recipetory.user.domain.User;
 import com.recipetory.user.domain.exception.NotOwnerException;
 import com.recipetory.utils.BaseTimeEntity;
@@ -12,14 +12,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 /**
- * 댓글
+ * 리뷰
  * */
 @Entity
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
-public class Comment extends BaseTimeEntity {
+public class Review extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -39,12 +39,10 @@ public class Comment extends BaseTimeEntity {
     @Column(length = MAX_CONTENT_LENGTH)
     private String content;
 
-    public void setAuthor(User author) {
-        this.author = author;
-    }
+    @Column
+    private int rating;
 
-
-    public static final int MAX_CONTENT_LENGTH = 1000;
+    public static final int MAX_CONTENT_LENGTH = 2000;
 
     public void verifyAuthor(User user) {
         if (this.author != user) {
@@ -56,7 +54,12 @@ public class Comment extends BaseTimeEntity {
         }
     }
 
-    public void updateContent(UpdateCommentDto dto) {
-        this.content = dto.getContent();
+    public void update(UpdateReviewDto reviewDto) {
+        this.content = reviewDto.getContent();
+        this.rating = reviewDto.getRating();
+    }
+
+    public String getRatingFormat() {
+        return String.format("%.1f", rating / 10.0);
     }
 }
