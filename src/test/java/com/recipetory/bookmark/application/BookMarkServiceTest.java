@@ -2,11 +2,15 @@ package com.recipetory.bookmark.application;
 
 
 import com.recipetory.TestRepositoryConfig;
+import com.recipetory.TestServiceConfig;
 import com.recipetory.bookmark.domain.BookMark;
 import com.recipetory.bookmark.domain.BookMarkRepository;
 import com.recipetory.bookmark.domain.exception.CannotBookMarkException;
+import com.recipetory.recipe.application.RecipeService;
 import com.recipetory.recipe.domain.Recipe;
 import com.recipetory.recipe.domain.RecipeRepository;
+import com.recipetory.recipe.domain.RecipeStatistics;
+import com.recipetory.user.application.UserService;
 import com.recipetory.user.domain.Role;
 import com.recipetory.user.domain.User;
 import com.recipetory.user.domain.UserRepository;
@@ -20,7 +24,7 @@ import org.springframework.context.annotation.Import;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
-@Import(TestRepositoryConfig.class)
+@Import({TestRepositoryConfig.class, TestServiceConfig.class})
 public class BookMarkServiceTest {
     private BookMarkService bookMarkService;
 
@@ -31,7 +35,13 @@ public class BookMarkServiceTest {
     private UserRepository userRepository;
 
     @Autowired
+    private UserService userService;
+
+    @Autowired
     private RecipeRepository recipeRepository;
+
+    @Autowired
+    private RecipeService recipeService;
 
     User user1, user2;
     Recipe recipe1, recipe2;
@@ -41,7 +51,7 @@ public class BookMarkServiceTest {
     @BeforeEach
     public void setUp() {
         bookMarkService = new BookMarkService(
-                bookMarkRepository, userRepository, recipeRepository);
+                bookMarkRepository, userService, recipeService);
 
         user1 = userRepository.save(
                 User.builder()
@@ -59,11 +69,13 @@ public class BookMarkServiceTest {
         recipe1 = recipeRepository.save(
                 Recipe.builder()
                         .title("recipe1")
+                        .recipeStatistics(new RecipeStatistics())
                         .author(user1)
                         .build());
         recipe2 = recipeRepository.save(
                 Recipe.builder()
                         .title("recipe2")
+                        .recipeStatistics(new RecipeStatistics())
                         .author(user2)
                         .build());
     }

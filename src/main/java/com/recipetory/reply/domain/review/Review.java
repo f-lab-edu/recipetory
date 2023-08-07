@@ -1,0 +1,65 @@
+package com.recipetory.reply.domain.review;
+
+import com.recipetory.recipe.domain.Recipe;
+import com.recipetory.reply.presentation.review.dto.UpdateReviewDto;
+import com.recipetory.user.domain.User;
+import com.recipetory.user.domain.exception.NotOwnerException;
+import com.recipetory.utils.BaseTimeEntity;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+/**
+ * 리뷰
+ * */
+@Entity
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+public class Review extends BaseTimeEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne(targetEntity = Recipe.class,
+            fetch = FetchType.LAZY)
+    @JoinColumn(nullable = false,
+            name = "recipe_id")
+    private Recipe recipe;
+
+    @ManyToOne(targetEntity = User.class,
+            fetch = FetchType.LAZY)
+    @JoinColumn(nullable = false,
+            name = "author_id")
+    private User author;
+
+    @Column(length = MAX_CONTENT_LENGTH)
+    private String content;
+
+    @Column
+    private int rating;
+
+    public static final int MAX_CONTENT_LENGTH = 2000;
+
+    public void verifyAuthor(User user) {
+        if (this.author != user) {
+            throw new NotOwnerException(
+                    user.getId(),
+                    author.getId(),
+                    this.getClass().getName(),
+                    String.valueOf(this.id));
+        }
+    }
+
+    public void update(UpdateReviewDto reviewDto) {
+        this.content = reviewDto.getContent();
+        this.rating = reviewDto.getRating();
+    }
+
+    public String getRatingFormat() {
+        return String.format("%.1f", rating / 10.0);
+    }
+}

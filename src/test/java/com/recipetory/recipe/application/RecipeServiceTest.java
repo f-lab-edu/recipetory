@@ -12,7 +12,7 @@ import com.recipetory.user.domain.Role;
 import com.recipetory.user.domain.User;
 import com.recipetory.user.domain.UserRepository;
 import com.recipetory.user.domain.exception.InvalidUserRoleException;
-import com.recipetory.user.domain.exception.UserNotFoundException;
+import com.recipetory.utils.exception.EntityNotFoundException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -65,14 +65,14 @@ public class RecipeServiceTest {
     }
 
     @Test
-    @DisplayName("존재하지 않는 유저 email에 대한 post는 UserNotFoundException이 발생한다.")
+    @DisplayName("존재하지 않는 유저 email에 대한 post는 EntityNotFoundException이 발생한다.")
     public void notFoundUserPost() {
         String testEmail = "notfound@test.com";
         Recipe recipe = Recipe.builder()
                 .title("TEST RECIPE")
                 .build();
 
-        Assertions.assertThrows(UserNotFoundException.class, () ->
+        Assertions.assertThrows(EntityNotFoundException.class, () ->
                 recipeService.createRecipe(recipe,new ArrayList<>(),testEmail));
     }
 

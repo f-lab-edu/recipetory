@@ -8,6 +8,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+/**
+ * 레시피의 개략적인 내용이 보이는 레시피 리스트에서 사용할 수 있습니다
+ * */
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
