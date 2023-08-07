@@ -37,7 +37,7 @@ public class CommentService {
 
         Comment created = commentRepository.save(
                 commentDto.toEntity(author,recipe));
-        updateCommentStatistics(recipe);
+        updateCommentCount(recipe);
 
         return created;
     }
@@ -97,7 +97,7 @@ public class CommentService {
         foundComment.verifyAuthor(currentUser);
         commentRepository.delete(foundComment);
 
-        updateCommentStatistics(foundComment.getRecipe());
+        updateCommentCount(foundComment.getRecipe());
     }
 
     /**
@@ -117,7 +117,7 @@ public class CommentService {
      * @param recipe 업데이트되는 레시피
      */
     @Transactional
-    public void updateCommentStatistics(Recipe recipe) {
+    public void updateCommentCount(Recipe recipe) {
         int commentCount = commentRepository.countByRecipe(recipe);
         recipe.getRecipeStatistics().updateCommentCount(commentCount);
     }
