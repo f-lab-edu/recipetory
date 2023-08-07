@@ -3,13 +3,13 @@ package com.recipetory.reply.application;
 import com.recipetory.recipe.application.RecipeService;
 import com.recipetory.recipe.domain.Recipe;
 import com.recipetory.reply.domain.exception.CannotReviewException;
-import com.recipetory.reply.domain.exception.ReplyNotFoundException;
 import com.recipetory.reply.domain.review.Review;
 import com.recipetory.reply.domain.review.ReviewRepository;
 import com.recipetory.reply.presentation.review.dto.CreateReviewDto;
 import com.recipetory.reply.presentation.review.dto.UpdateReviewDto;
 import com.recipetory.user.application.UserService;
 import com.recipetory.user.domain.User;
+import com.recipetory.utils.exception.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -109,12 +109,12 @@ public class ReviewService {
      * 특정 id를 가진 리뷰를 조회한다.
      * @param reviewId id of review
      * @return found review
-     * @throws ReplyNotFoundException 존재하지 않는 리뷰에 대해 발생한다.
+     * @throws EntityNotFoundException 존재하지 않는 리뷰에 대해 발생한다.
      */
     @Transactional(readOnly = true)
     public Review getReviewById(Long reviewId) {
         return reviewRepository.findById(reviewId)
-                .orElseThrow(ReplyNotFoundException::new);
+                .orElseThrow(() -> new EntityNotFoundException("Review",String.valueOf(reviewId)));
     }
 
     /**

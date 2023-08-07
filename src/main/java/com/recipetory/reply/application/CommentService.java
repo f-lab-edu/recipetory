@@ -4,12 +4,11 @@ import com.recipetory.recipe.application.RecipeService;
 import com.recipetory.recipe.domain.Recipe;
 import com.recipetory.reply.domain.comment.Comment;
 import com.recipetory.reply.domain.comment.CommentRepository;
-import com.recipetory.reply.domain.exception.ReplyNotFoundException;
-import com.recipetory.reply.presentation.comment.dto.CommentDto;
 import com.recipetory.reply.presentation.comment.dto.CreateCommentDto;
 import com.recipetory.reply.presentation.comment.dto.UpdateCommentDto;
 import com.recipetory.user.application.UserService;
 import com.recipetory.user.domain.User;
+import com.recipetory.utils.exception.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -109,7 +108,7 @@ public class CommentService {
     @Transactional(readOnly = true)
     public Comment getCommentById(Long commentId) {
         return commentRepository.findById(commentId)
-                .orElseThrow(ReplyNotFoundException::new);
+                .orElseThrow(() -> new EntityNotFoundException("Comment",String.valueOf(commentId)));
     }
 
     /**

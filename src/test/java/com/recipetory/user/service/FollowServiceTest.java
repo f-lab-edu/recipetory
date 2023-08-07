@@ -1,7 +1,9 @@
 package com.recipetory.user.service;
 
 import com.recipetory.TestRepositoryConfig;
+import com.recipetory.TestServiceConfig;
 import com.recipetory.user.application.FollowService;
+import com.recipetory.user.application.UserService;
 import com.recipetory.user.domain.Role;
 import com.recipetory.user.domain.User;
 import com.recipetory.user.domain.UserRepository;
@@ -18,13 +20,16 @@ import org.springframework.context.annotation.Import;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
-@Import(TestRepositoryConfig.class)
+@Import({TestRepositoryConfig.class, TestServiceConfig.class})
 public class FollowServiceTest {
     @Autowired
     private FollowRepository followRepository;
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private UserService userService;
 
     private FollowService followService;
 
@@ -33,7 +38,7 @@ public class FollowServiceTest {
 
     @BeforeEach
     public void setUp() {
-        followService = new FollowService(followRepository,userRepository);
+        followService = new FollowService(followRepository,userService);
 
         user1 = userRepository.save(
                 User.builder().name("user1").role(Role.USER).email("user1@test.com").build());

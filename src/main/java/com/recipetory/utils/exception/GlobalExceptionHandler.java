@@ -25,6 +25,13 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 @RestControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<ExceptionResponse> handlerEntityNotFoundException(EntityNotFoundException e) {
+        log.warn("{} Entity of {} Not Found",e.getEntityName(),e.getKey());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new ExceptionResponse("존재하지 않는 " + e.getEntityName() + "입니다."));
+    }
+
     @ExceptionHandler({
             HttpRequestMethodNotSupportedException.class,
             HttpMediaTypeNotSupportedException.class,

@@ -8,7 +8,6 @@ import com.recipetory.recipe.domain.RecipeRepository;
 import com.recipetory.recipe.domain.RecipeStatistics;
 import com.recipetory.reply.domain.comment.Comment;
 import com.recipetory.reply.domain.comment.CommentRepository;
-import com.recipetory.reply.domain.exception.ReplyNotFoundException;
 import com.recipetory.reply.presentation.comment.dto.CreateCommentDto;
 import com.recipetory.reply.presentation.comment.dto.UpdateCommentDto;
 import com.recipetory.user.application.UserService;
@@ -16,6 +15,7 @@ import com.recipetory.user.domain.Role;
 import com.recipetory.user.domain.User;
 import com.recipetory.user.domain.UserRepository;
 import com.recipetory.user.domain.exception.NotOwnerException;
+import com.recipetory.utils.exception.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -136,8 +136,8 @@ public class CommentServiceTest {
         // when : 해당 댓글을 삭제한다.
         commentService.deleteComment(userEmail, created.getId());
 
-        // then : 댓글 id로 조회하면 ReplyNotFoundException이 발생한다.
-        assertThrows(ReplyNotFoundException.class,
+        // then : 댓글 id로 조회하면 EntityNotFoundException이 발생한다.
+        assertThrows(EntityNotFoundException.class,
                 () -> commentService.getCommentById(created.getId()));
     }
 

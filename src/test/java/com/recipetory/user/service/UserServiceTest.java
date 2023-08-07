@@ -5,8 +5,8 @@ import com.recipetory.user.application.UserService;
 import com.recipetory.user.domain.Role;
 import com.recipetory.user.domain.User;
 import com.recipetory.user.domain.UserRepository;
-import com.recipetory.user.domain.exception.UserNotFoundException;
 import com.recipetory.user.presentation.dto.EditUserDto;
+import com.recipetory.utils.exception.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,7 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Import(TestRepositoryConfig.class)
 @DataJpaTest
@@ -56,11 +57,11 @@ public class UserServiceTest {
     public void testEmailNotFound() {
         // given : 현재 DB엔 유저가 없는 상태
 
-        // when,then : 아무 이메일과 아이디로 유저 찾았을 경우 UserNotFoundException
-        assertThrows(UserNotFoundException.class, () -> {
+        // when,then : 아무 이메일과 아이디로 유저 찾았을 경우 EntityNotFoundException
+        assertThrows(EntityNotFoundException.class, () -> {
             userService.getUserByEmail("email@test.com");
         });
-        assertThrows(UserNotFoundException.class, () -> {
+        assertThrows(EntityNotFoundException.class, () -> {
             userService.getUserById(1234L);
         });
     }

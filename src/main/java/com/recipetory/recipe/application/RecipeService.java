@@ -5,12 +5,10 @@ import com.recipetory.ingredient.domain.RecipeIngredient;
 import com.recipetory.ingredient.presentation.dto.RecipeIngredientDto;
 import com.recipetory.recipe.domain.Recipe;
 import com.recipetory.recipe.domain.RecipeRepository;
-import com.recipetory.recipe.domain.exception.RecipeNotFoundException;
 import com.recipetory.user.domain.Role;
 import com.recipetory.user.domain.User;
-import com.recipetory.user.domain.UserKeyType;
 import com.recipetory.user.domain.UserRepository;
-import com.recipetory.user.domain.exception.UserNotFoundException;
+import com.recipetory.utils.exception.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -55,13 +53,12 @@ public class RecipeService {
     @Transactional(readOnly = true)
     public Recipe getRecipeById(Long recipeId) {
         return recipeRepository.findById(recipeId)
-                .orElseThrow(() -> new RecipeNotFoundException(String.valueOf(recipeId)));
+                .orElseThrow(() -> new EntityNotFoundException("Recipe", String.valueOf(recipeId)));
     }
 
     @Transactional
     private User findUserByEmail(String email) {
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new UserNotFoundException(
-                        UserKeyType.EMAIL, email));
+                .orElseThrow(() -> new EntityNotFoundException("User",email));
     }
 }

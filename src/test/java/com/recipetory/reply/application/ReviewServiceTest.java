@@ -7,7 +7,6 @@ import com.recipetory.recipe.domain.Recipe;
 import com.recipetory.recipe.domain.RecipeRepository;
 import com.recipetory.recipe.domain.RecipeStatistics;
 import com.recipetory.reply.domain.exception.CannotReviewException;
-import com.recipetory.reply.domain.exception.ReplyNotFoundException;
 import com.recipetory.reply.domain.review.Review;
 import com.recipetory.reply.domain.review.ReviewRepository;
 import com.recipetory.reply.presentation.review.dto.CreateReviewDto;
@@ -17,6 +16,7 @@ import com.recipetory.user.domain.Role;
 import com.recipetory.user.domain.User;
 import com.recipetory.user.domain.UserRepository;
 import com.recipetory.user.domain.exception.NotOwnerException;
+import com.recipetory.utils.exception.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -168,7 +168,7 @@ public class ReviewServiceTest {
         reviewService.deleteReview(reviewAuthorEmail, created.getId());
 
         // then : 리뷰 id로 조회하면 ReplyNotFoundException이 발생한다.
-        assertThrows(ReplyNotFoundException.class, () ->
+        assertThrows(EntityNotFoundException.class, () ->
                 reviewService.getReviewById(created.getId()));
     }
 
