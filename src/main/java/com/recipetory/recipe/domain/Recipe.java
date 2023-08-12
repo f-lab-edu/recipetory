@@ -2,6 +2,7 @@ package com.recipetory.recipe.domain;
 
 import com.recipetory.ingredient.domain.RecipeIngredient;
 import com.recipetory.step.domain.Step;
+import com.recipetory.tag.domain.Tag;
 import com.recipetory.user.domain.User;
 import com.recipetory.utils.BaseTimeEntity;
 import jakarta.persistence.*;
@@ -48,6 +49,12 @@ public class Recipe extends BaseTimeEntity {
             mappedBy = "recipe",
             orphanRemoval = true)
     private List<RecipeIngredient> ingredients;
+
+    @OneToMany(targetEntity = Tag.class,
+            cascade = CascadeType.ALL,
+            mappedBy = "recipe",
+            orphanRemoval = true)
+    private List<Tag> tags;
 
     // set basic relations for creation
     public void setBasicRelations(User author,

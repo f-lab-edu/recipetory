@@ -40,6 +40,7 @@ public class RecipeService {
         // 3. set basic relations
         recipe.setBasicRelations(author,recipeIngredients);
         recipe.getSteps().forEach(step -> step.setRecipe(recipe));
+        recipe.getTags().forEach(tag -> tag.setRecipe(recipe));
 
         // 4. save(persist) -> cascade
         return recipeRepository.save(recipe);

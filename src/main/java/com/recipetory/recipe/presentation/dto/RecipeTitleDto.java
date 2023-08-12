@@ -1,5 +1,6 @@
 package com.recipetory.recipe.presentation.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.recipetory.recipe.domain.Recipe;
 import com.recipetory.recipe.domain.RecipeInfo;
 import com.recipetory.recipe.domain.RecipeStatistics;
@@ -15,6 +16,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 @Getter
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class RecipeTitleDto {
     private Long id;
     private String title;
