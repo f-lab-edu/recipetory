@@ -18,6 +18,12 @@ import com.recipetory.reply.infrastructure.comment.CommentJpaRepository;
 import com.recipetory.reply.infrastructure.comment.CommentRepositoryImpl;
 import com.recipetory.reply.infrastructure.review.ReviewJpaRepository;
 import com.recipetory.reply.infrastructure.review.ReviewRepositoryImpl;
+import com.recipetory.step.domain.StepRepository;
+import com.recipetory.step.infrastructure.StepJpaRepository;
+import com.recipetory.step.infrastructure.StepRepositoryImpl;
+import com.recipetory.tag.domain.TagRepository;
+import com.recipetory.tag.infrastructure.TagJpaRepository;
+import com.recipetory.tag.infrastructure.TagRepositoryImpl;
 import com.recipetory.user.domain.UserRepository;
 import com.recipetory.user.domain.follow.FollowRepository;
 import com.recipetory.user.infrastructure.FollowJpaRepository;
@@ -74,5 +80,17 @@ public class TestRepositoryConfig {
     public ReviewRepository reviewRepository(
             ReviewJpaRepository reviewJpaRepository) {
         return new ReviewRepositoryImpl(reviewJpaRepository);
+    }
+
+    @Bean
+    public TagRepository tagRepository(
+            TagJpaRepository tagJpaRepository) {
+        return new TagRepositoryImpl(tagJpaRepository);
+    }
+
+    @Bean
+    public StepRepository stepRepository(
+            StepJpaRepository stepJpaRepository) {
+        return new StepRepositoryImpl(stepJpaRepository);
     }
 }
