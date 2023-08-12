@@ -1,11 +1,9 @@
 package com.recipetory.config.auth;
 
-import com.recipetory.user.domain.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
@@ -15,9 +13,8 @@ import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
-@Profile("prod")
-public class SecurityConfiguration {
-
+@Profile("local")
+public class LocalSecurityConfig {
     private final CustomOAuth2UserService customOAuth2UserService;
 
     // since spring security 6.1.2 : MvcRequestMatcher.Builder
@@ -26,19 +23,6 @@ public class SecurityConfiguration {
     SecurityFilterChain filterChain(HttpSecurity http, MvcRequestMatcher.Builder mvc) throws Exception {
         http
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers(mvc.pattern("/check")).authenticated()
-                        .requestMatchers(mvc.pattern("/profile")).authenticated()
-                        .requestMatchers(mvc.pattern(HttpMethod.POST,"/recipe")).hasAuthority(Role.USER.getKey())
-                        .requestMatchers(mvc.pattern(HttpMethod.POST,"/bookmark/**")).authenticated()
-                        .requestMatchers(mvc.pattern(HttpMethod.DELETE,"/bookmark/**")).authenticated()
-                        .requestMatchers(mvc.pattern("/follow/**")).authenticated()
-                        .requestMatchers(mvc.pattern(HttpMethod.POST,"/tags/**")).hasAuthority(Role.USER.getKey())
-                        .requestMatchers(mvc.pattern(HttpMethod.DELETE,"/tags/**")).hasAuthority(Role.USER.getKey())
-                        // 조회(GET)는 permitAll, 나머지는 authenticated()
-                        .requestMatchers(mvc.pattern(HttpMethod.GET,"/comments/**")).permitAll()
-                        .requestMatchers(mvc.pattern("/comments/**")).authenticated()
-                        .requestMatchers(mvc.pattern(HttpMethod.GET,"/reviews/**")).permitAll()
-                        .requestMatchers(mvc.pattern("/reviews/**")).authenticated()
                         .anyRequest().permitAll())
                 // for h2-console
                 .headers(headers -> headers.frameOptions(option -> option.disable()))
