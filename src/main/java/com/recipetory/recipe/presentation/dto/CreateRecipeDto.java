@@ -4,6 +4,8 @@ import com.recipetory.ingredient.presentation.dto.RecipeIngredientDto;
 import com.recipetory.recipe.domain.*;
 import com.recipetory.step.domain.Step;
 import com.recipetory.step.presentation.dto.CreateStepDto;
+import com.recipetory.tag.domain.Tag;
+import com.recipetory.tag.presentation.dto.TagDto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -34,8 +36,7 @@ public class CreateRecipeDto {
         private List<RecipeIngredientDto> ingredients
                 = new ArrayList<>();
 
-        // TODO : Tag
-
+        private List<TagDto> tags = new ArrayList<>();
 
         // recipe entity without m:n relation
         public Recipe toEntity() {
@@ -51,10 +52,16 @@ public class CreateRecipeDto {
                     .map(CreateStepDto.Request::toEntity)
                     .toList();
 
+            // '일대다'로 종속된 tags
+            List<Tag> tags = this.tags.stream()
+                    .map(TagDto::toEntity)
+                    .toList();
+
             return Recipe.builder()
                     .title(title)
                     .recipeInfo(recipeInfo)
                     .recipeStatistics(new RecipeStatistics()) // statistics : 항상 초기값
+                    .tags(tags)
                     .steps(steps)
                     .build();
         }
@@ -73,6 +80,7 @@ public class CreateRecipeDto {
 
         private List<CreateStepDto.Response> steps;
         private List<RecipeIngredientDto> ingredients;
+        private List<TagDto> tags;
 
         public static CreateRecipeDto.Response fromEntity(Recipe recipe) {
             RecipeInfo recipeInfo = recipe.getRecipeInfo();
@@ -83,12 +91,15 @@ public class CreateRecipeDto {
             List<RecipeIngredientDto> ingredients = recipe.getIngredients().stream()
                     .map(RecipeIngredientDto::fromEntity)
                     .toList();
+            List<TagDto> tags = recipe.getTags().stream()
+                    .map(TagDto::fromEntity).toList();
 
             return Response.builder()
                     .title(recipe.getTitle())
                     .recipeInfo(recipeInfo)
                     .steps(steps)
                     .ingredients(ingredients)
+                    .tags(tags)
                     .build();
         }
     }

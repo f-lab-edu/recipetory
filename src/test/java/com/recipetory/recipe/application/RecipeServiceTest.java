@@ -1,5 +1,7 @@
 package com.recipetory.recipe.application;
 
+import com.recipetory.TestRepositoryConfig;
+import com.recipetory.TestServiceConfig;
 import com.recipetory.ingredient.domain.IngredientRepository;
 import com.recipetory.ingredient.domain.RecipeIngredientRepository;
 import com.recipetory.ingredient.presentation.dto.RecipeIngredientDto;
@@ -8,6 +10,9 @@ import com.recipetory.recipe.domain.RecipeRepository;
 import com.recipetory.recipe.domain.RecipeStatistics;
 import com.recipetory.step.domain.Step;
 import com.recipetory.step.domain.StepRepository;
+import com.recipetory.tag.domain.Tag;
+import com.recipetory.tag.domain.TagName;
+import com.recipetory.tag.domain.TagRepository;
 import com.recipetory.user.domain.Role;
 import com.recipetory.user.domain.User;
 import com.recipetory.user.domain.UserRepository;
@@ -17,16 +22,16 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-@SpringBootTest
-@ActiveProfiles("test")
+@Import({TestRepositoryConfig.class, TestServiceConfig.class})
+@DataJpaTest
 public class RecipeServiceTest {
     @Autowired
     private RecipeService recipeService;
@@ -45,6 +50,9 @@ public class RecipeServiceTest {
 
     @Autowired
     private StepRepository stepRepository;
+
+    @Autowired
+    private TagRepository tagRepository;
 
     @Test
     @Transactional
@@ -88,6 +96,7 @@ public class RecipeServiceTest {
         Recipe recipe = Recipe.builder()
                 .title("TEST RECIPE")
                 .steps(new ArrayList<>())
+                .tags(new ArrayList<>())
                 .recipeStatistics(new RecipeStatistics())
                 .build();
         List<RecipeIngredientDto> recipeIngredientDtos = Arrays.asList(
@@ -117,7 +126,7 @@ public class RecipeServiceTest {
 
         // then-1 : step
         found.getSteps().forEach(step -> {
-            Assertions.assertNotNull(step.getRecipe());
+            Assertions.assertEquals(found,step.getRecipe());
         });
 
         // then-2 : user
@@ -126,6 +135,11 @@ public class RecipeServiceTest {
         // then-3 : ingredient
         Assertions.assertEquals(saved.getIngredients().size(),
                 recipeIngredientRepository.findByRecipe(found).size());
+
+        // then-4 : tag
+        found.getTags().forEach(tag -> {
+            Assertions.assertEquals(tag.getRecipe(),found);
+        });
     }
 
     private Recipe saveTestRecipe() {
@@ -144,10 +158,16 @@ public class RecipeServiceTest {
                 stepRepository.save(Step.builder().description("단계2").build()),
                 stepRepository.save(Step.builder().description("단계3").build()));
 
+        List<Tag> tags = Arrays.asList(
+                tagRepository.save(Tag.builder().tagName(TagName.BOIL).build()),
+                tagRepository.save(Tag.builder().tagName(TagName.DIET).build()));
+
         Recipe recipe = Recipe.builder()
                 .title("TEST RECIPE")
+                .author(user)
                 .steps(steps)
                 .recipeStatistics(new RecipeStatistics())
+                .tags(tags)
                 .build();
 
         return recipeService.createRecipe(recipe, recipeIngredientDtos,testEmail);
