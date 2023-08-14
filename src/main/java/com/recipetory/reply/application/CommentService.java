@@ -1,5 +1,6 @@
 package com.recipetory.reply.application;
 
+import com.recipetory.notification.domain.event.CommentEvent;
 import com.recipetory.recipe.application.RecipeService;
 import com.recipetory.recipe.domain.Recipe;
 import com.recipetory.reply.domain.comment.Comment;
@@ -10,6 +11,7 @@ import com.recipetory.user.application.UserService;
 import com.recipetory.user.domain.User;
 import com.recipetory.utils.exception.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +23,7 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final RecipeService recipeService;
     private final UserService userService;
+    private final ApplicationEventPublisher eventPublisher;
 
     /**
      * 레시피에 대한 댓글을 추가한다.
@@ -38,6 +41,8 @@ public class CommentService {
         Comment created = commentRepository.save(
                 commentDto.toEntity(author,recipe));
         updateCommentCount(recipe);
+
+        eventPublisher.publishEvent(new CommentEvent(created));
 
         return created;
     }
