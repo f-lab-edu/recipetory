@@ -1,6 +1,6 @@
 package com.recipetory.reply.application;
 
-import com.recipetory.notification.domain.event.CommentEvent;
+import com.recipetory.notification.domain.event.CreateCommentEvent;
 import com.recipetory.recipe.application.RecipeService;
 import com.recipetory.recipe.domain.Recipe;
 import com.recipetory.reply.domain.comment.Comment;
@@ -42,7 +42,7 @@ public class CommentService {
                 commentDto.toEntity(author,recipe));
         updateCommentCount(recipe);
 
-        eventPublisher.publishEvent(new CommentEvent(created));
+        eventPublisher.publishEvent(new CreateCommentEvent(created));
 
         return created;
     }

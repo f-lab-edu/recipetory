@@ -62,7 +62,7 @@ public class NotificationService {
     }
 
     /**
-     * id로 조회된 알림을 읽음처리한다.
+     * id로 조회된 알림을 삭제한다.
      * @param notificationId
      * @param logInEmail
      */

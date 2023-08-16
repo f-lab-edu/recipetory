@@ -6,6 +6,6 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class CommentEvent {
+public class CreateCommentEvent {
     private final Comment comment;
 }

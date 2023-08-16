@@ -1,6 +1,6 @@
 package com.recipetory.reply.application;
 
-import com.recipetory.notification.domain.event.ReviewEvent;
+import com.recipetory.notification.domain.event.CreateReviewEvent;
 import com.recipetory.recipe.application.RecipeService;
 import com.recipetory.recipe.domain.Recipe;
 import com.recipetory.reply.domain.exception.CannotReviewException;
@@ -46,7 +46,7 @@ public class ReviewService {
                 reviewDto.toEntity(author,recipe));
         updateReviewStatistic(recipe);
 
-        eventPublisher.publishEvent(new ReviewEvent(created));
+        eventPublisher.publishEvent(new CreateReviewEvent(created));
 
         return created;
     }

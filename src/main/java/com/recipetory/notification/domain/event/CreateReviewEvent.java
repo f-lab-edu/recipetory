@@ -6,6 +6,6 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class ReviewEvent {
+public class CreateReviewEvent {
     private final Review review;
 }

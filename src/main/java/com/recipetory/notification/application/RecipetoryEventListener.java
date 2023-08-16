@@ -3,10 +3,10 @@ package com.recipetory.notification.application;
 import com.recipetory.notification.domain.Notification;
 import com.recipetory.notification.domain.NotificationRepository;
 import com.recipetory.notification.domain.NotificationType;
-import com.recipetory.notification.domain.event.CommentEvent;
+import com.recipetory.notification.domain.event.CreateCommentEvent;
 import com.recipetory.notification.domain.event.CreateRecipeEvent;
 import com.recipetory.notification.domain.event.FollowEvent;
-import com.recipetory.notification.domain.event.ReviewEvent;
+import com.recipetory.notification.domain.event.CreateReviewEvent;
 import com.recipetory.recipe.domain.Recipe;
 import com.recipetory.reply.domain.comment.Comment;
 import com.recipetory.reply.domain.review.Review;
@@ -75,12 +75,12 @@ public class RecipetoryEventListener {
 
     /**
      * 댓글 알림
-     * @param commentEvent
+     * @param createCommentEvent
      */
     @TransactionalEventListener
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void handleCommentEvent(CommentEvent commentEvent) {
-        Comment comment = commentEvent.getComment();
+    public void handleCommentEvent(CreateCommentEvent createCommentEvent) {
+        Comment comment = createCommentEvent.getComment();
         User sender = comment.getAuthor();
         User receiver = comment.getRecipe().getAuthor();
 
@@ -96,12 +96,12 @@ public class RecipetoryEventListener {
 
     /**
      * 리뷰 알림
-     * @param reviewEvent
+     * @param createReviewEvent
      */
     @TransactionalEventListener
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void handleCommentEvent(ReviewEvent reviewEvent) {
-        Review review = reviewEvent.getReview();
+    public void handleCommentEvent(CreateReviewEvent createReviewEvent) {
+        Review review = createReviewEvent.getReview();
         User sender = review.getAuthor();
         User receiver = review.getRecipe().getAuthor();
 
