@@ -1,5 +1,6 @@
 package com.recipetory.user.presentation.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.recipetory.user.domain.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,6 +13,7 @@ import java.time.LocalDateTime;
 @Getter
 @Builder
 @NoArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ProfileDto {
     private String name;
     private String email;

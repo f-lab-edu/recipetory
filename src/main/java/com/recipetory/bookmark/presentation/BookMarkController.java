@@ -14,11 +14,25 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/bookmark")
 public class BookMarkController {
     private final BookMarkService bookMarkService;
 
-    @GetMapping("/{recipeId}")
+    /**
+     * path variable의 유저가 북마크를 조회한다.
+     * @param userId
+     * @return
+     */
+    @GetMapping("/{userId}/bookmarks")
+    public ResponseEntity<BookMarkListDto> findBookMarksOfUser(
+            @PathVariable("userId") Long userId) {
+        List<BookMark> foundBookMarks = bookMarkService
+                .findBookMarkByUserId(userId);
+
+        return ResponseEntity.ok(
+                BookMarkListDto.fromEntityList(foundBookMarks));
+    }
+
+    @GetMapping("/bookmarks/{recipeId}")
     public ResponseEntity<BookMarkListDto> findBookMarksOfRecipe(
             @PathVariable("recipeId") Long recipeId) {
         List<BookMark> foundBookMarks = bookMarkService.findBookMarkByRecipeId(recipeId);
@@ -27,7 +41,7 @@ public class BookMarkController {
         return ResponseEntity.ok(bookMarkListDto);
     }
 
-    @PostMapping("/{recipeId}")
+    @PostMapping("/bookmarks/{recipeId}")
     public ResponseEntity<BookMarkDto> addBookMark(
             @LogInUser SessionUser logInUser,
             @PathVariable("recipeId") Long recipeId) {
@@ -37,7 +51,7 @@ public class BookMarkController {
         return ResponseEntity.ok(BookMarkDto.fromEntity(saved));
     }
 
-    @DeleteMapping("/{recipeId}")
+    @DeleteMapping("/bookmarks/{recipeId}")
     public ResponseEntity<Void> deleteBookMark(
             @LogInUser SessionUser logInUser,
             @PathVariable("recipeId") Long recipeId) {

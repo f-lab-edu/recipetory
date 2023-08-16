@@ -5,7 +5,7 @@ import com.recipetory.recipe.domain.Recipe;
 import com.recipetory.recipe.presentation.dto.SimpleRecipeDto;
 import com.recipetory.reply.domain.review.Review;
 import com.recipetory.user.domain.User;
-import com.recipetory.user.presentation.dto.SimpleUserDto;
+import com.recipetory.user.presentation.dto.UserDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ReviewDto {
     private Long reviewId;
-    private SimpleUserDto author;
+    private UserDto author;
     private SimpleRecipeDto recipe;
     private String rating;
     private String content;
@@ -29,7 +29,7 @@ public class ReviewDto {
 
         return ReviewDto.builder()
                 .reviewId(review.getId())
-                .author(SimpleUserDto.fromEntity(author))
+                .author(UserDto.fromEntity(author))
                 .recipe(SimpleRecipeDto.fromEntity(recipe))
                 .rating(review.getRatingFormat())
                 .content(review.getContent())

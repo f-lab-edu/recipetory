@@ -5,7 +5,7 @@ import com.recipetory.recipe.domain.Recipe;
 import com.recipetory.recipe.presentation.dto.SimpleRecipeDto;
 import com.recipetory.reply.domain.comment.Comment;
 import com.recipetory.user.domain.User;
-import com.recipetory.user.presentation.dto.SimpleUserDto;
+import com.recipetory.user.presentation.dto.UserDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CommentDto {
     private Long commentId;
-    private SimpleUserDto author;
+    private UserDto author;
     private SimpleRecipeDto recipe;
     private String content;
 
@@ -28,7 +28,7 @@ public class CommentDto {
 
         return CommentDto.builder()
                 .commentId(comment.getId())
-                .author(SimpleUserDto.fromEntity(author))
+                .author(UserDto.fromEntity(author))
                 .recipe(SimpleRecipeDto.fromEntity(recipe))
                 .content(comment.getContent())
                 .build();

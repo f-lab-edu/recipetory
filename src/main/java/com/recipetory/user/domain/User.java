@@ -33,6 +33,9 @@ public class User extends BaseTimeEntity {
             length = 15)
     private String name;
 
+    @Column(length = 200)
+    private String bio = "";
+
     @Column(length = 255)
     private String imageUrl;
 
@@ -71,8 +74,9 @@ public class User extends BaseTimeEntity {
         }
     }
 
-    public void editName(String name) {
+    public void editNameAndBio(String name, String bio) {
         this.name = name;
+        this.bio = bio;
         this.role = Role.USER;
     }
 }

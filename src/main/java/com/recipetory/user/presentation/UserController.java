@@ -1,109 +1,77 @@
 package com.recipetory.user.presentation;
 
-import com.recipetory.bookmark.application.BookMarkService;
-import com.recipetory.bookmark.domain.BookMark;
-import com.recipetory.bookmark.presentation.dto.BookMarkListDto;
-import com.recipetory.config.auth.CustomOAuth2UserService;
 import com.recipetory.config.auth.argumentresolver.LogInUser;
 import com.recipetory.config.auth.dto.SessionUser;
-import com.recipetory.user.application.FollowService;
 import com.recipetory.user.application.UserService;
-import com.recipetory.user.domain.User;
 import com.recipetory.user.presentation.dto.EditUserDto;
-import com.recipetory.user.presentation.dto.FollowDto;
 import com.recipetory.user.presentation.dto.ProfileDto;
-import com.recipetory.user.presentation.dto.UserHomeDto;
+import com.recipetory.user.presentation.dto.UserDto;
+import com.recipetory.user.presentation.dto.UserListDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequiredArgsConstructor
 public class UserController {
-    private final BookMarkService bookMarkService;
     private final UserService userService;
-    private final FollowService followService;
-    private final CustomOAuth2UserService oAuth2UserService;
 
-    // path variable의 user information
+    /**
+     * path variable의 id에 해당하는 유저의 정보를 조회한다.
+     * @param userId path variable
+     * @return
+     */
     @GetMapping("/{userId}")
-    public ResponseEntity<UserHomeDto> showUser(
+    public ResponseEntity<UserDto> showUser(
             @PathVariable("userId") Long userId) {
+        UserDto found = UserDto.fromEntity(
+                userService.getUserById(userId));
 
-        return ResponseEntity.ok(
-                UserHomeDto.fromEntity(
-                        userService.getUserById(userId)));
+        return ResponseEntity.ok(found);
     }
 
-    @GetMapping("/{userId}/bookmark")
-    public ResponseEntity<BookMarkListDto> findBookMarksOfUser(
-            @PathVariable("userId") Long userId) {
-        List<BookMark> foundBookMarks = bookMarkService
-                .findBookMarkByUserId(userId);
-
-        return ResponseEntity.ok(
-                BookMarkListDto.fromEntityList(foundBookMarks));
-    }
-
-    // 로그인한 유저 자신의 profile
+    /**
+     * 현제 세션에 로그인된 유저의 프로필 정보를 조회한다.
+     * @param logInUser
+     * @return
+     */
     @GetMapping("/profile")
     public ResponseEntity<ProfileDto> showProfile(
             @LogInUser SessionUser logInUser) {
+        ProfileDto profile = ProfileDto.fromEntity(
+                userService.getUserByEmail(logInUser.getEmail()));
 
-        return ResponseEntity.ok(ProfileDto.fromEntity(
-                userService.getUserByEmail(logInUser.getEmail())));
+        return ResponseEntity.ok(profile);
     }
 
+    /**
+     * 현재 로그인한 유저의 name, bio를 수정한다.
+     * @param logInUser 세션유저
+     * @param editUserDto
+     * @return
+     */
     @PutMapping("/profile")
-    public ResponseEntity<EditUserDto.Response> editCurrentUser(
+    public ResponseEntity<UserDto> editCurrentUser(
             @LogInUser SessionUser logInUser,
             @Valid @RequestBody EditUserDto editUserDto
             ) {
-        String oldName = logInUser.getName();
-        User edited = userService.editUser(logInUser.getEmail(), editUserDto);
-        String newName = edited.getName();
+        UserDto edited = userService.editUser(
+                logInUser.getEmail(), editUserDto);
 
-        oAuth2UserService.updateContextUser(edited);
-
-        return ResponseEntity.ok(
-                EditUserDto.Response.builder()
-                        .id(edited.getId())
-                        .oldName(oldName).newName(newName).
-                        build());
+        return ResponseEntity.ok(edited);
     }
 
-    @GetMapping("/{userId}/followers")
-    public ResponseEntity<FollowDto> showFollowers(
-            @PathVariable("userId") Long userId) {
-        List<User> followers = followService.getFollowers(userId);
-
-        return ResponseEntity.ok(FollowDto.fromEntityList(followers));
-    }
-
-    @GetMapping("/{userId}/following")
-    public ResponseEntity<FollowDto> showFollowing(
-            @PathVariable("userId") Long userId) {
-        List<User> followings = followService.getFollowings(userId);
-
-        return ResponseEntity.ok(FollowDto.fromEntityList(followings));
-    }
-
-    @PostMapping("/follow/{userId}")
-    public ResponseEntity<Void> follow(
-            @LogInUser SessionUser logInUser,
-            @PathVariable("userId") Long userId) {
-        followService.follow(logInUser.getEmail(), userId);
-        return ResponseEntity.ok().build();
-    }
-
-    @DeleteMapping("/follow/{userId}")
-    public ResponseEntity<Void> unfollow(
-            @LogInUser SessionUser logInUser,
-            @PathVariable("userId") Long userId) {
-        followService.unFollow(logInUser.getEmail(), userId);
-        return ResponseEntity.ok().build();
+    /**
+     * query parameter로 들어온 문자열을 포함한 유저를 검색한다.
+     * @param userName
+     * @return user list
+     */
+    @GetMapping("/user/search")
+    public ResponseEntity<UserListDto> searchUser(
+            @RequestParam(value = "q", defaultValue = "") String userName
+    ) {
+        UserListDto found = userService.findUserByNameContains(userName);
+        return ResponseEntity.ok(found);
     }
 }
