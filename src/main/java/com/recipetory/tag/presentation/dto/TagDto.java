@@ -21,7 +21,6 @@ public class TagDto {
     private TagName tagName;
 
     public Tag toEntity() {
-        System.out.println(tagName);
         return Tag.builder()
                 .tagName(tagName)
                 .build();

@@ -1,10 +1,12 @@
 package com.recipetory.user.application;
 
+import com.recipetory.notification.domain.event.FollowEvent;
 import com.recipetory.user.domain.User;
 import com.recipetory.user.domain.exception.CannotFollowException;
 import com.recipetory.user.domain.follow.Follow;
 import com.recipetory.user.domain.follow.FollowRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,6 +17,7 @@ import java.util.List;
 public class FollowService {
     private final FollowRepository followRepository;
     private final UserService userService;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional(readOnly = true)
     public List<User> getFollowers(Long userId) {
@@ -43,12 +46,16 @@ public class FollowService {
             throw new CannotFollowException(following.getId(), followed.getId());
         }
 
-        return followRepository.findByFollowingAndFollowed(following,followed)
+        Follow follow =  followRepository.findByFollowingAndFollowed(following,followed)
                 .orElse(followRepository.save(
                         Follow.builder()
                                 .following(following)
                                 .followed(followed)
                                 .build()));
+
+        eventPublisher.publishEvent(new FollowEvent(follow));
+
+        return follow;
     }
 
     @Transactional

@@ -3,6 +3,7 @@ package com.recipetory.recipe.application;
 import com.recipetory.ingredient.application.IngredientService;
 import com.recipetory.ingredient.domain.RecipeIngredient;
 import com.recipetory.ingredient.presentation.dto.RecipeIngredientDto;
+import com.recipetory.notification.domain.event.CreateRecipeEvent;
 import com.recipetory.recipe.domain.Recipe;
 import com.recipetory.recipe.domain.RecipeRepository;
 import com.recipetory.user.domain.Role;
@@ -11,6 +12,7 @@ import com.recipetory.user.domain.UserRepository;
 import com.recipetory.utils.exception.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +25,7 @@ public class RecipeService {
     private final RecipeRepository recipeRepository;
     private final IngredientService ingredientService;
     private final UserRepository userRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     public Recipe createRecipe(Recipe recipe,
@@ -43,7 +46,12 @@ public class RecipeService {
         recipe.getTags().forEach(tag -> tag.setRecipe(recipe));
 
         // 4. save(persist) -> cascade
-        return recipeRepository.save(recipe);
+        Recipe saved = recipeRepository.save(recipe);
+
+        // 5. send notification (@TransactionalEventListener이므로 커밋 후에 실행됨)
+        eventPublisher.publishEvent(new CreateRecipeEvent(saved));
+
+        return saved;
     }
 
     /**

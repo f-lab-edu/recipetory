@@ -1,5 +1,6 @@
 package com.recipetory.reply.application;
 
+import com.recipetory.notification.domain.event.CreateReviewEvent;
 import com.recipetory.recipe.application.RecipeService;
 import com.recipetory.recipe.domain.Recipe;
 import com.recipetory.reply.domain.exception.CannotReviewException;
@@ -11,6 +12,7 @@ import com.recipetory.user.application.UserService;
 import com.recipetory.user.domain.User;
 import com.recipetory.utils.exception.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +24,7 @@ public class ReviewService {
     private final ReviewRepository reviewRepository;
     private final RecipeService recipeService;
     private final UserService userService;
+    private final ApplicationEventPublisher eventPublisher;
 
     /**
      * 레시피에 대한 리뷰를 추가한다.
@@ -42,6 +45,8 @@ public class ReviewService {
         Review created = reviewRepository.save(
                 reviewDto.toEntity(author,recipe));
         updateReviewStatistic(recipe);
+
+        eventPublisher.publishEvent(new CreateReviewEvent(created));
 
         return created;
     }
