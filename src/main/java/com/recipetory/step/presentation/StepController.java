@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/steps")
 public class StepController {
     private final StepService stepService;
 
@@ -20,7 +19,7 @@ public class StepController {
      * @param recipeId path varible long
      * @return
      */
-    @GetMapping("/{recipeId}")
+    @GetMapping("/recipes/{recipeId}/steps")
     public ResponseEntity<StepListDto> getStepsByRecipeId(
             @PathVariable("recipeId") Long recipeId
     ) {
