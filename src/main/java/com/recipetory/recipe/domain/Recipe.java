@@ -42,6 +42,7 @@ public class Recipe extends BaseTimeEntity {
             cascade = CascadeType.ALL,
             orphanRemoval = true,
             mappedBy = "recipe")
+    @OrderBy("stepNumber asc")
     private List<Step> steps;
 
     @OneToMany(targetEntity = RecipeIngredient.class,
