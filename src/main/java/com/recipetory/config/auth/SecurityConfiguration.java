@@ -28,9 +28,9 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(mvc.pattern("/check")).authenticated()
                         .requestMatchers(mvc.pattern("/profile")).authenticated()
-                        .requestMatchers(mvc.pattern(HttpMethod.POST,"/recipe")).hasAuthority(Role.USER.getKey())
-                        .requestMatchers(mvc.pattern(HttpMethod.POST,"/bookmark/**")).authenticated()
-                        .requestMatchers(mvc.pattern(HttpMethod.DELETE,"/bookmark/**")).authenticated()
+                        .requestMatchers(mvc.pattern(HttpMethod.POST,"/recipes")).hasAuthority(Role.USER.getKey())
+                        .requestMatchers(mvc.pattern(HttpMethod.POST,"/bookmarks/**")).authenticated()
+                        .requestMatchers(mvc.pattern(HttpMethod.DELETE,"/bookmarks/**")).authenticated()
                         .requestMatchers(mvc.pattern("/follow/**")).authenticated()
                         .requestMatchers(mvc.pattern(HttpMethod.POST,"/tags/**")).hasAuthority(Role.USER.getKey())
                         .requestMatchers(mvc.pattern(HttpMethod.DELETE,"/tags/**")).hasAuthority(Role.USER.getKey())
@@ -39,6 +39,7 @@ public class SecurityConfiguration {
                         .requestMatchers(mvc.pattern("/comments/**")).authenticated()
                         .requestMatchers(mvc.pattern(HttpMethod.GET,"/reviews/**")).permitAll()
                         .requestMatchers(mvc.pattern("/reviews/**")).authenticated()
+                        .requestMatchers(mvc.pattern("/notifications")).authenticated()
                         .anyRequest().permitAll())
                 // for h2-console
                 .headers(headers -> headers.frameOptions(option -> option.disable()))
