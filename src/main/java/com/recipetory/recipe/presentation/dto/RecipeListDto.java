@@ -12,11 +12,11 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RecipeListDto {
-    private List<RecipeTitleDto> recipes = new ArrayList<>();
+    private List<RecipeDto> recipes = new ArrayList<>();
 
     public static RecipeListDto fromEntityList(List<Recipe> recipes) {
-        List<RecipeTitleDto> recipeDtos = recipes.stream()
-                .map(RecipeTitleDto::fromEntity).toList();
+        List<RecipeDto> recipeDtos = recipes.stream()
+                .map(RecipeDto::fromEntity).toList();
 
         return new RecipeListDto(recipeDtos);
     }

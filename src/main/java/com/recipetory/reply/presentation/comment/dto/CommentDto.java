@@ -2,7 +2,7 @@ package com.recipetory.reply.presentation.comment.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.recipetory.recipe.domain.Recipe;
-import com.recipetory.recipe.presentation.dto.SimpleRecipeDto;
+import com.recipetory.recipe.presentation.dto.RecipeDto;
 import com.recipetory.reply.domain.comment.Comment;
 import com.recipetory.user.domain.User;
 import com.recipetory.user.presentation.dto.UserDto;
@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 public class CommentDto {
     private Long commentId;
     private UserDto author;
-    private SimpleRecipeDto recipe;
+    private RecipeDto recipe;
     private String content;
 
     public static CommentDto fromEntity(Comment comment) {
@@ -29,7 +29,7 @@ public class CommentDto {
         return CommentDto.builder()
                 .commentId(comment.getId())
                 .author(UserDto.fromEntity(author))
-                .recipe(SimpleRecipeDto.fromEntity(recipe))
+                .recipe(RecipeDto.fromEntity(recipe))
                 .content(comment.getContent())
                 .build();
     }

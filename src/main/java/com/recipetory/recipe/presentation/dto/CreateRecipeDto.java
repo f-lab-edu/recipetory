@@ -72,11 +72,14 @@ public class CreateRecipeDto {
     @AllArgsConstructor
     @Builder
     public static class Response {
+        private Long id;
+
         @NotNull
         @NotBlank
         private String title;
 
         private RecipeInfo recipeInfo;
+        private RecipeStatistics recipeStatistics;
 
         private List<CreateStepDto.Response> steps;
         private List<RecipeIngredientDto> ingredients;
@@ -95,6 +98,7 @@ public class CreateRecipeDto {
                     .map(TagDto::fromEntity).toList();
 
             return Response.builder()
+                    .id(recipe.getId())
                     .title(recipe.getTitle())
                     .recipeInfo(recipeInfo)
                     .steps(steps)

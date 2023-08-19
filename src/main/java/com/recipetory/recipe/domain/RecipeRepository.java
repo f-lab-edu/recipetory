@@ -1,7 +1,6 @@
 package com.recipetory.recipe.domain;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-
+import java.util.List;
 import java.util.Optional;
 
 public interface RecipeRepository {
@@ -10,4 +9,8 @@ public interface RecipeRepository {
     Recipe save(Recipe recipe);
 
     Optional<Recipe> findById(Long id);
+
+    List<Recipe> findByTitleContains(String title);
+
+    void deleteById(Long id);
 }

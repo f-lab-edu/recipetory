@@ -5,6 +5,7 @@ import com.recipetory.recipe.domain.RecipeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -26,5 +27,15 @@ public class RecipeRepositoryImpl implements RecipeRepository {
     @Override
     public Optional<Recipe> findById(Long id) {
         return recipeJpaRepository.findById(id);
+    }
+
+    @Override
+    public List<Recipe> findByTitleContains(String title) {
+        return recipeJpaRepository.findByTitleContains(title);
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        recipeJpaRepository.deleteById(id);
     }
 }
