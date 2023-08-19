@@ -7,7 +7,7 @@ import com.recipetory.recipe.domain.Recipe;
 import com.recipetory.recipe.domain.RecipeInfo;
 import com.recipetory.recipe.domain.RecipeStatistics;
 import com.recipetory.step.domain.Step;
-import com.recipetory.step.presentation.dto.StepListDto;
+import com.recipetory.step.presentation.dto.StepDto;
 import com.recipetory.tag.domain.Tag;
 import com.recipetory.tag.presentation.dto.TagDto;
 import com.recipetory.user.domain.User;
@@ -32,7 +32,7 @@ public class RecipeDto {
 
     // relations
     private UserDto author;
-    private StepListDto steps;
+    private List<StepDto> steps;
     private List<RecipeIngredientDto> ingredients;
     private List<TagDto> tags;
 
@@ -60,7 +60,7 @@ public class RecipeDto {
     public void setRelations(
             User author, List<Step> steps, List<RecipeIngredient> ingredients, List<Tag> tags) {
         this.author = UserDto.fromEntity(author);
-        this.steps = StepListDto.fromEntityList(steps);
+        this.steps = steps.stream().map(StepDto::fromEntity).toList();
         this.ingredients = ingredients.stream()
                 .map(RecipeIngredientDto::fromEntity).toList();
         this.tags = tags.stream()
