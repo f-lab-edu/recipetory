@@ -15,7 +15,7 @@ import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
-@Profile("prod")
+@Profile("server")
 public class SecurityConfiguration {
 
     private final CustomOAuth2UserService customOAuth2UserService;
