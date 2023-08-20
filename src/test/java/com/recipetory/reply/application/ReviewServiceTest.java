@@ -1,10 +1,7 @@
 package com.recipetory.reply.application;
 
-import com.recipetory.TestRepositoryConfig;
-import com.recipetory.TestServiceConfig;
 import com.recipetory.recipe.application.RecipeService;
 import com.recipetory.recipe.domain.Recipe;
-import com.recipetory.recipe.domain.RecipeRepository;
 import com.recipetory.recipe.domain.RecipeStatistics;
 import com.recipetory.reply.domain.exception.CannotReviewException;
 import com.recipetory.reply.domain.review.Review;
@@ -14,38 +11,35 @@ import com.recipetory.reply.presentation.review.dto.UpdateReviewDto;
 import com.recipetory.user.application.UserService;
 import com.recipetory.user.domain.Role;
 import com.recipetory.user.domain.User;
-import com.recipetory.user.domain.UserRepository;
 import com.recipetory.user.domain.exception.NotOwnerException;
 import com.recipetory.utils.exception.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.context.annotation.Import;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.when;
 
-@DataJpaTest
-@Import({TestRepositoryConfig.class, TestServiceConfig.class})
+@ExtendWith(MockitoExtension.class)
 public class ReviewServiceTest {
     private ReviewService reviewService;
-
-    @Autowired
-    private ReviewRepository reviewRepository;
-    @Autowired
+    @Mock
     private RecipeService recipeService;
-    @Autowired
+    @Mock
     private UserService userService;
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private RecipeRepository recipeRepository;
+    @Mock
+    private ApplicationEventPublisher eventPublisher;
 
+    // recipeAuthor 유저와 해당 유저가 작성한 recipe,
+    // 리뷰를 작성할 reviewAuthor 유저가 존재한다.
     User recipeAuthor, reviewAuthor;
     Recipe recipe;
     String recipeAuthorEmail, reviewAuthorEmail;
@@ -53,31 +47,32 @@ public class ReviewServiceTest {
     // 레시피 주인, 리뷰 주인, 레시피를 저장한다.
     @BeforeEach
     public void setUp() {
+        ReviewRepository testReviewRepository = new TestReviewRepository();
         reviewService = new ReviewService(
-                reviewRepository, recipeService, userService);
+                testReviewRepository, recipeService, userService, eventPublisher);
 
         recipeAuthorEmail = "recipe@test.com";
-        recipeAuthor = userRepository.save(
-                User.builder()
+        recipeAuthor = User.builder().id(1L)
                         .name("recipeAuthor").email(recipeAuthorEmail).role(Role.USER)
-                        .build());
-        recipe = recipeRepository.save(
-                Recipe.builder()
+                        .build();
+        recipe = Recipe.builder()
                         .title("recipe").recipeStatistics(new RecipeStatistics()).author(recipeAuthor)
-                        .build());
-
+                        .build();
         reviewAuthorEmail = "review@test.com";
-        reviewAuthor = userRepository.save(
-                User.builder()
+        reviewAuthor = User.builder().id(2L)
                         .name("reviewAuthor").email(reviewAuthorEmail).role(Role.USER)
-                        .build());
+                        .build();
 
+        // mocking
+        when(recipeService.getRecipeById(recipe.getId())).thenReturn(recipe);
     }
 
 
     @Test
     @DisplayName("레시피의 주인은 리뷰를 작성할 수 없다.")
     public void cannotReviewTest() {
+        when(userService.getUserByEmail(recipeAuthorEmail)).thenReturn(recipeAuthor);
+
         CreateReviewDto request = getCreateRequest();
 
         assertThrows(CannotReviewException.class, () ->
@@ -87,6 +82,9 @@ public class ReviewServiceTest {
     @Test
     @DisplayName("작성한 리뷰는 조회될 수 있다.")
     public void createReviewTest() {
+        when(userService.getUserByEmail(reviewAuthorEmail)).thenReturn(reviewAuthor);
+        when(userService.getUserById(reviewAuthor.getId())).thenReturn(reviewAuthor);
+
         // given, when : 리뷰를 작성한다.
         CreateReviewDto request = getCreateRequest();
         Review created = reviewService.createReview(reviewAuthorEmail,request);
@@ -100,6 +98,8 @@ public class ReviewServiceTest {
     @Test
     @DisplayName("작성된 리뷰가 레시피 정보(리뷰 수, 평점)에 반영된다.")
     public void recipeStatisticsTest() {
+        when(userService.getUserByEmail(reviewAuthorEmail)).thenReturn(reviewAuthor);
+
         // given
         int reviewCount = 10;
         List<Integer> ratings = new ArrayList<>();
@@ -125,13 +125,16 @@ public class ReviewServiceTest {
     @Test
     @DisplayName("리뷰 작성자가 아닌 사용자는 리뷰를 수정하거나 삭제할 수 없다.")
     public void invalidUserReviewTest() {
+        when(userService.getUserByEmail(reviewAuthorEmail)).thenReturn(reviewAuthor);
+
         // given 1 : reviewAuthor 유저가 리뷰를 작성한다.
         CreateReviewDto request = getCreateRequest();
         Review created = reviewService.createReview(reviewAuthorEmail, request);
 
         // given 2 : 리뷰 작성자가 아닌 another 유저가 존재한다.
-        User another = userRepository.save(User.builder()
-                .email("another@test.com").name("another").role(Role.USER).build());
+        User another = User.builder().id(3L)
+                .email("another@test.com").name("another").role(Role.USER).build();
+        when(userService.getUserByEmail(another.getEmail())).thenReturn(another);
 
         // when, then : another 유저는 댓글 수정이나 삭제가 불가하다.
         assertThrows(NotOwnerException.class, () ->
@@ -143,6 +146,8 @@ public class ReviewServiceTest {
     @Test
     @DisplayName("리뷰는 작성자에 의해 수정될 수 있다.")
     public void updateReviewTest() {
+        when(userService.getUserByEmail(reviewAuthorEmail)).thenReturn(reviewAuthor);
+
         // given : reviewAuthor 유저가 리뷰를 작성한다.
         CreateReviewDto request = getCreateRequest();
         Review created = reviewService.createReview(reviewAuthorEmail, request);
@@ -160,6 +165,8 @@ public class ReviewServiceTest {
     @Test
     @DisplayName("리뷰는 작성자에 의해 삭제될 수 있다.")
     public void deleteReviewTest() {
+        when(userService.getUserByEmail(reviewAuthorEmail)).thenReturn(reviewAuthor);
+
         // given : reviewAuthor 유저가 리뷰를 작성한다.
         CreateReviewDto request = getCreateRequest();
         Review created = reviewService.createReview(reviewAuthorEmail, request);
@@ -175,6 +182,8 @@ public class ReviewServiceTest {
     @Test
     @DisplayName("레시피의 리뷰가 모두 삭제되면(개수가 0개면) 평점은 0점이다.")
     public void zeroRatingsTest() {
+        when(userService.getUserByEmail(reviewAuthorEmail)).thenReturn(reviewAuthor);
+
         // given : 리뷰를 작성한다.
         CreateReviewDto request = getCreateRequest();
         Review created = reviewService.createReview(reviewAuthorEmail,request);

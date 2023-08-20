@@ -1,27 +1,20 @@
 package com.recipetory.ingredient.application;
 
-import com.recipetory.TestRepositoryConfig;
 import com.recipetory.ingredient.domain.Ingredient;
 import com.recipetory.ingredient.domain.IngredientRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.context.annotation.Import;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@DataJpaTest
-@Import(TestRepositoryConfig.class)
 public class IngredientServiceTest {
-    @Autowired
-    private IngredientRepository ingredientRepository;
-
     private IngredientService ingredientService;
-
+    private IngredientRepository ingredientRepository;
     @BeforeEach
     public void setUp() {
+        ingredientRepository = new TestIngredientRepository();
         ingredientService = new IngredientService(ingredientRepository);
     }
 
@@ -49,6 +42,7 @@ public class IngredientServiceTest {
                 Ingredient.builder().name(ingredientName).build());
 
         // when, then : "재료" 이름으로 ingredient 찾았을 때 same
-        assertEquals(existing, ingredientService.saveOrFind(ingredientName));
+        assertEquals(existing.getId(),
+                ingredientService.saveOrFind(ingredientName).getId());
     }
 }

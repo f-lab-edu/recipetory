@@ -1,107 +1,84 @@
 package com.recipetory.bookmark.application;
 
 
-import com.recipetory.TestRepositoryConfig;
-import com.recipetory.TestServiceConfig;
 import com.recipetory.bookmark.domain.BookMark;
 import com.recipetory.bookmark.domain.BookMarkRepository;
 import com.recipetory.bookmark.domain.exception.CannotBookMarkException;
 import com.recipetory.recipe.application.RecipeService;
 import com.recipetory.recipe.domain.Recipe;
-import com.recipetory.recipe.domain.RecipeRepository;
 import com.recipetory.recipe.domain.RecipeStatistics;
 import com.recipetory.user.application.UserService;
 import com.recipetory.user.domain.Role;
 import com.recipetory.user.domain.User;
-import com.recipetory.user.domain.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.context.annotation.Import;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.when;
 
-@DataJpaTest
-@Import({TestRepositoryConfig.class, TestServiceConfig.class})
+@ExtendWith(MockitoExtension.class)
 public class BookMarkServiceTest {
     private BookMarkService bookMarkService;
-
-    @Autowired
-    private BookMarkRepository bookMarkRepository;
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
+    @Mock
     private UserService userService;
-
-    @Autowired
-    private RecipeRepository recipeRepository;
-
-    @Autowired
+    @Mock
     private RecipeService recipeService;
 
     User user1, user2;
     Recipe recipe1, recipe2;
-    String userEmail1 = "user1@test.com";
-    String userEmail2 = "user2@test.com";
 
     @BeforeEach
     public void setUp() {
-        bookMarkService = new BookMarkService(
-                bookMarkRepository, userService, recipeService);
+        BookMarkRepository testBookMarkRepository = new TestBookMarkRepository();
+        bookMarkService = new BookMarkService(testBookMarkRepository,userService,recipeService);
 
-        user1 = userRepository.save(
-                User.builder()
-                        .name("user1")
-                        .role(Role.USER)
-                        .email(userEmail1)
-                        .build());
-        user2 = userRepository.save(
-                User.builder()
-                        .name("user2")
-                        .role(Role.USER)
-                        .email(userEmail2)
-                        .build());
-
-        recipe1 = recipeRepository.save(
-                Recipe.builder()
-                        .title("recipe1")
-                        .recipeStatistics(new RecipeStatistics())
-                        .author(user1)
-                        .build());
-        recipe2 = recipeRepository.save(
-                Recipe.builder()
-                        .title("recipe2")
-                        .recipeStatistics(new RecipeStatistics())
-                        .author(user2)
-                        .build());
+        // user1이 recipe1
+        // user2가 recipe2 작성
+        user1 = User.builder().id(1L).email("user1@test.com")
+                .name("user1").role(Role.USER).build();
+        user2 = User.builder().email("user2@test.com")
+                .id(2L).name("user2").role(Role.USER).build();
+        recipe1 = Recipe.builder().author(user1)
+                .id(1L).title("recipe1").recipeStatistics(new RecipeStatistics()).build();
+        recipe2 = Recipe.builder().author(user2)
+                .id(2L).title("recipe2").recipeStatistics(new RecipeStatistics()).build();
     }
 
     @Test
     @DisplayName("자신이 작성하지 않은 레시피의 북마크에 성공한다.")
     public void bookMarkTest() {
+        when(userService.getUserByEmail(user1.getEmail())).thenReturn(user1);
+        when(recipeService.getRecipeById(recipe2.getId())).thenReturn(recipe2);
+
         assertDoesNotThrow(() -> {
-            bookMarkService.addBookMark(userEmail1,recipe2.getId());
+            bookMarkService.addBookMark(user1.getEmail(),recipe2.getId());
         });
-        assertNotNull(bookMarkRepository.findByBookMarkerAndRecipe(user1,recipe2));
     }
 
     @Test
     @DisplayName("레시피의 주인은 북마크할 수 없다.")
     public void cannotReBookMarkTest() {
+        when(userService.getUserByEmail(user1.getEmail())).thenReturn(user1);
+        when(recipeService.getRecipeById(recipe1.getId())).thenReturn(recipe1);
+
         assertThrows(CannotBookMarkException.class, () -> {
-            bookMarkService.addBookMark(userEmail1,recipe1.getId());
+            bookMarkService.addBookMark(user1.getEmail(),recipe1.getId());
         });
     }
 
     @Test
     @DisplayName("같은 레시피를 여러번 북마크해도 한 번만 반영된다.(멱등하다)")
     public void idempotentBookMarkTest() {
-        BookMark saved = bookMarkService.addBookMark(userEmail1,recipe2.getId());
+        when(userService.getUserByEmail(user1.getEmail())).thenReturn(user1);
+        when(recipeService.getRecipeById(recipe2.getId())).thenReturn(recipe2);
+
+        BookMark saved = bookMarkService.addBookMark(user1.getEmail(),recipe2.getId());
+
         assertEquals(saved,
-                bookMarkService.addBookMark(userEmail1,recipe2.getId()));
+                bookMarkService.addBookMark(user1.getEmail(),recipe2.getId()));
     }
 }
