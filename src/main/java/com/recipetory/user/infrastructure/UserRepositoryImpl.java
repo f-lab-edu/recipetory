@@ -33,4 +33,9 @@ public class UserRepositoryImpl implements UserRepository {
     public List<User> findByNameContains(String name) {
         return userJpaRepository.findByNameContains(name);
     }
+
+    @Override
+    public void deleteById(Long id) {
+        userJpaRepository.deleteById(id);
+    }
 }

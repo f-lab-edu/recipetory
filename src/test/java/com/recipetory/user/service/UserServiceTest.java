@@ -1,6 +1,6 @@
 package com.recipetory.user.service;
 
-import com.recipetory.TestRepositoryConfig;
+import com.recipetory.config.auth.CustomOAuth2UserService;
 import com.recipetory.user.application.UserService;
 import com.recipetory.user.domain.Role;
 import com.recipetory.user.domain.User;
@@ -10,45 +10,44 @@ import com.recipetory.utils.exception.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.context.annotation.Import;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@Import(TestRepositoryConfig.class)
-@DataJpaTest
+@ExtendWith(MockitoExtension.class)
 public class UserServiceTest {
-    @Autowired
     private UserRepository userRepository;
-
+    @Mock
+    private CustomOAuth2UserService oAuth2UserService;
     private UserService userService;
 
     @BeforeEach
     public void setUp() {
-        userService = new UserService(userRepository);
+        userRepository = new TestUserRepository();
+        userService = new UserService(userRepository,oAuth2UserService);
     }
 
     @Test
     @DisplayName("수정한 유저의 이름과 Role은 잘 반영된다.")
     public void testEditUser() {
         // given : testEmail, "test" name 을 가진 GUEST 유저
-        String testEmail = "test@test.com";
-        userRepository.save(User.builder()
-                .name("test")
-                .email("test@test.com")
-                .role(Role.GUEST).build());
+        User user = userRepository.save(User.builder()
+                .name("test").email("test@test.com").role(Role.GUEST).build());
 
         // when : "new test"로 edit
         String newName = "new test";
-        EditUserDto editUserDto = new EditUserDto(newName);
-        userService.editUser(testEmail,editUserDto);
+        String newBio = "new bio";
+        EditUserDto editUserDto = new EditUserDto(newName,newBio);
+        userService.editUser(user.getEmail(),editUserDto);
 
-        // then : 이름이 "new test", 권한이 USER 유저로 바뀌었다.
-        User foundUser = userRepository.findByEmail(testEmail)
+        // then : 이름, bio, 권한이 잘 수정되었다.
+        User foundUser = userRepository.findByEmail(user.getEmail())
                 .orElseThrow();
         assertEquals(newName, foundUser.getName());
+        assertEquals(newBio, foundUser.getBio());
         assertEquals(foundUser.getRole(),Role.USER);
     }
 

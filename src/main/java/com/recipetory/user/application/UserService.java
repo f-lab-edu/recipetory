@@ -29,7 +29,7 @@ public class UserService {
     public UserDto editUser(String logInEmail, EditUserDto editUserDto) {
         User editUser = getUserByEmail(logInEmail);
         editUser.editNameAndBio(
-                editUserDto.getName(), editUser.getBio());
+                editUserDto.getName(), editUserDto.getBio());
 
         // security context에 수정된 유저 정보 업데이트
         oAuth2UserService.updateContextUser(editUser);

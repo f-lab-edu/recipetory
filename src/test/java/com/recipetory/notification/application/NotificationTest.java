@@ -9,6 +9,8 @@ import com.recipetory.recipe.domain.RecipeInfo;
 import com.recipetory.recipe.domain.RecipeStatistics;
 import com.recipetory.reply.application.CommentService;
 import com.recipetory.reply.application.ReviewService;
+import com.recipetory.reply.domain.comment.Comment;
+import com.recipetory.reply.domain.review.Review;
 import com.recipetory.reply.presentation.comment.dto.CreateCommentDto;
 import com.recipetory.reply.presentation.review.dto.CreateReviewDto;
 import com.recipetory.user.application.FollowService;
@@ -18,6 +20,7 @@ import com.recipetory.user.domain.UserRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.transaction.TestTransaction;
@@ -30,6 +33,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
 @Transactional
+@AutoConfigureTestDatabase
 // @DirtiesContext : spring boot test에서 application context를 재사용하는 것을 막아줌
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class NotificationTest {
@@ -118,7 +122,7 @@ class NotificationTest {
         // when : commentAuthor 유저가 댓글을 생성한다.
         User commentAuthor = userRepository.save(User.builder()
                 .name("commentAuthor").email("commentAuthor@test.com").role(Role.USER).build());
-        commentService.createComment(commentAuthor.getEmail(), new CreateCommentDto(
+        Comment comment = commentService.createComment(commentAuthor.getEmail(), new CreateCommentDto(
                 recipe.getId(),"test comment"));
 
         // TransactionalEventListener 사용중이기 때문에, 이전 transaction commit 필요
@@ -150,13 +154,14 @@ class NotificationTest {
         // when : reviewAuthor 유저가 리뷰를 생성한다.
         User reviewAuthor = userRepository.save(User.builder()
                 .name("reviewAuthor").email("reviewAuthor@test.com").role(Role.USER).build());
-        reviewService.createReview(reviewAuthor.getEmail(), new CreateReviewDto(
+        Review review = reviewService.createReview(reviewAuthor.getEmail(), new CreateReviewDto(
                 recipe.getId(),30,"test review"));
 
         // TransactionalEventListener 사용중이기 때문에, 이전 transaction commit 필요
         TestTransaction.flagForCommit();
         TestTransaction.end();
         TestTransaction.start();
+        TestTransaction.flagForRollback();
 
         // then : sender가 reviewAuthor, receiver가 recipeAuthor인 COMMENT 알림이 1개 생성된다.
         List<Notification> notifications = notificationRepository.findByReceiver(recipeAuthor);
