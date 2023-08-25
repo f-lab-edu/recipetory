@@ -22,18 +22,24 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
 
 @SpringBootTest
 @Transactional
 @AutoConfigureTestDatabase
+@EmbeddedKafka(partitions = 4,
+        brokerProperties = {
+                "listeners=PLAINTEXT://localhost:9092",
+                "port=9092" })
 // @DirtiesContext : spring boot test에서 application context를 재사용하는 것을 막아줌
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class NotificationTest {
@@ -67,16 +73,17 @@ class NotificationTest {
                 .build();
         recipeService.createRecipe(recipe,new ArrayList<>(),author.getEmail());
 
-        // TransactionalEventListener 사용중이기 때문에, 이전 transaction commit 필요
         TestTransaction.flagForCommit();
         TestTransaction.end();
         TestTransaction.start();
 
         // then : sender가 author, receiver가 follower인 NEW_RECIPE 알림이 1개 생성된다.
-        List<Notification> notifications = notificationRepository.findByReceiver(follower);
-        assertEquals(1,notifications.size());
-
-        Notification notification = notifications.get(0);
+        await().atMost(3, TimeUnit.SECONDS)
+                .untilAsserted(() -> {
+                    assertEquals(1,
+                            notificationRepository.findByReceiver(follower).size()); // 1개
+                });
+        Notification notification = notificationRepository.findByReceiver(follower).get(0);
         assertEquals(author.getId(),notification.getSender().getId()); // sender
         assertEquals(NotificationType.NEW_RECIPE, notification.getNotificationType()); // NEW_RECIPE
     }
@@ -90,7 +97,7 @@ class NotificationTest {
         User follower = userRepository.save(User.builder()
                 .name("follower1").email("follower1@test.com").role(Role.USER).build());
 
-        // when : follower 유저가 follow 유저를 팔로우한다.
+        // when : follower 유저가 followed 유저를 팔로우한다.
         followService.follow(follower.getEmail(),followed.getId());
 
         // TransactionalEventListener를 사용중이기 때문에, 이전 transaction commit 필요
@@ -99,10 +106,13 @@ class NotificationTest {
         TestTransaction.start();
 
         // then : sender가 follower, receiver가 followed인 FOLLOW 알림이 1개 생성된다.
-        List<Notification> notifications = notificationRepository.findByReceiver(followed);
-        assertEquals(1,notifications.size());
+        await().atMost(3, TimeUnit.SECONDS)
+                .untilAsserted(() -> {
+                    assertEquals(1,
+                            notificationRepository.findByReceiver(followed).size()); // 1개
+                });
 
-        Notification notification = notifications.get(0);
+        Notification notification = notificationRepository.findByReceiver(followed).get(0);
         assertEquals(follower.getId(), notification.getSender().getId()); // sender
         assertEquals(NotificationType.FOLLOW, notification.getNotificationType()); // FOLLOW
     }
@@ -131,10 +141,13 @@ class NotificationTest {
         TestTransaction.start();
 
         // then : sender가 commentAuthor, receiver가 recipeAuthor인 COMMENT 알림이 1개 생성된다.
-        List<Notification> notifications = notificationRepository.findByReceiver(recipeAuthor);
-        assertEquals(1,notifications.size()); // 1개
+        await().atMost(3, TimeUnit.SECONDS)
+                .untilAsserted(() -> {
+                    assertEquals(1,
+                            notificationRepository.findByReceiver(recipeAuthor).size()); // 1개
+                });
 
-        Notification notification = notifications.get(0);
+        Notification notification = notificationRepository.findByReceiver(recipeAuthor).get(0);
         assertEquals(commentAuthor.getId(), notification.getSender().getId()); // sender
         assertEquals(NotificationType.COMMENT, notification.getNotificationType()); // COMMENT
     }
@@ -161,13 +174,15 @@ class NotificationTest {
         TestTransaction.flagForCommit();
         TestTransaction.end();
         TestTransaction.start();
-        TestTransaction.flagForRollback();
 
         // then : sender가 reviewAuthor, receiver가 recipeAuthor인 COMMENT 알림이 1개 생성된다.
-        List<Notification> notifications = notificationRepository.findByReceiver(recipeAuthor);
-        assertEquals(1,notifications.size());
+        await().atMost(30, TimeUnit.SECONDS)
+                .untilAsserted(() -> {
+                    assertEquals(1,
+                            notificationRepository.findByReceiver(recipeAuthor).size()); // 1개
+                });
 
-        Notification notification = notifications.get(0);
+        Notification notification = notificationRepository.findByReceiver(recipeAuthor).get(0);
         assertEquals(reviewAuthor.getId(), notification.getSender().getId());
         assertEquals(NotificationType.REVIEW, notification.getNotificationType());
     }

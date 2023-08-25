@@ -1,4 +1,7 @@
 spring:
+  kafka:
+    bootstrap-servers: localhost:9092
+    group-id: recipetory-local
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://${MYSQL_HOST}:3306/recipetory?useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
@@ -8,7 +11,7 @@ spring:
     properties:
       hibernate:
         default_batch_fetch_size: 1000
-        show_sql: true
+#        show_sql: true
     hibernate:
       ddl-auto: update
   security:
