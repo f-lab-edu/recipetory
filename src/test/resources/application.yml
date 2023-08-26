@@ -1,0 +1,14 @@
+spring:
+  kafka:
+    bootstrap-servers: localhost:9092
+    group-id: recipetory-test
+    consumer:
+      auto-offset-reset: earliest
+      enable-auto-commit: false
+  jpa:
+    properties:
+      hibernate:
+        default_batch_fetch_size: 1000
+#        show_sql: true
+    hibernate:
+      ddl-auto: update

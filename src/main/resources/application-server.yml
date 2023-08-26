@@ -1,4 +1,7 @@
 spring:
+  kafka:
+    bootstrap-servers: 10.178.0.7:9092, 10.178.0.8:9092, 10.178.0.9:9092
+    group-id: recipetory
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://10.178.0.3:3306/recipetory?useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
