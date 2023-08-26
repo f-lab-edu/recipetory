@@ -19,13 +19,10 @@ public class KafkaNotificationMessageSender implements NotificationMessageSender
 
     @Override
     public void sendNotificationMessage(NotificationMessage message) {
-        CompletableFuture<SendResult<String, NotificationMessage>> future =
-                kafkaTemplate.send(KafkaTopic.NOTIFICATION, message);
-
-        future.whenComplete((result, ex) -> {
-            if (ex != null) {
-                log.warn("message sent failed!", ex);
-            }
-        });
+        kafkaTemplate.send(message.getTopic(), message)
+                .whenComplete((result, ex) -> {
+                    if (ex != null) {
+                        log.warn("message sent failed!", ex);
+                    }});
     }
 }

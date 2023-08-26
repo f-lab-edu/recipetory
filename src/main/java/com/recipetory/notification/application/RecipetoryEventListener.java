@@ -1,5 +1,6 @@
 package com.recipetory.notification.application;
 
+import com.recipetory.config.kafka.KafkaTopic;
 import com.recipetory.notification.domain.NotificationMessageSender;
 import com.recipetory.notification.domain.NotificationType;
 import com.recipetory.notification.domain.event.CreateCommentEvent;
@@ -12,7 +13,6 @@ import com.recipetory.reply.domain.comment.Comment;
 import com.recipetory.reply.domain.review.Review;
 import com.recipetory.user.domain.User;
 import com.recipetory.user.domain.follow.Follow;
-import com.recipetory.user.domain.follow.FollowRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
@@ -37,13 +37,13 @@ public class RecipetoryEventListener {
         // 생성된 레시피, 알림 종류 정보 구성
         Recipe createdRecipe = createRecipeEvent.getRecipe();
         User author = createdRecipe.getAuthor();
-        NotificationType type = NotificationType.NEW_RECIPE;
 
         // logging
         log.info("{} created recipe {}", author.getId(), createdRecipe.getId());
 
         NotificationMessage message = NotificationMessage.builder()
                 .notificationType(NotificationType.NEW_RECIPE)
+                .topic(KafkaTopic.FOLLOWER_NOTIFICATION)
                 .path(NotificationType.NEW_RECIPE.getDefaultPath(author.getId()))
                 .senderId(author.getId()).build();
 
@@ -67,6 +67,7 @@ public class RecipetoryEventListener {
 
         NotificationMessage message = NotificationMessage.builder()
                 .notificationType(NotificationType.FOLLOW)
+                .topic(KafkaTopic.NOTIFICATION)
                 .path(NotificationType.FOLLOW.getDefaultPath(sender.getId()))
                 .senderId(sender.getId()).receiverId(receiver.getId())
                 .build();
@@ -90,6 +91,7 @@ public class RecipetoryEventListener {
         log.info("{} comments {}", sender.getId(), comment.getId());
 
         NotificationMessage message = NotificationMessage.builder()
+                .topic(KafkaTopic.NOTIFICATION)
                 .notificationType(type).path(type.getDefaultPath(comment.getId()))
                 .senderId(sender.getId()).receiverId(receiver.getId())
                 .build();
@@ -113,6 +115,7 @@ public class RecipetoryEventListener {
         log.info("{} reviewed {}", sender.getId(), review.getId());
 
         NotificationMessage message = NotificationMessage.builder()
+                .topic(KafkaTopic.NOTIFICATION)
                 .notificationType(type).path(type.getDefaultPath(review.getId()))
                 .senderId(sender.getId()).receiverId(receiver.getId())
                 .build();

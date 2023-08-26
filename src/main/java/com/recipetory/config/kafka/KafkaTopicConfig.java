@@ -26,4 +26,9 @@ public class KafkaTopicConfig {
     public NewTopic notificationTopic() {
         return new NewTopic(KafkaTopic.NOTIFICATION, 2, (short) 2);
     }
+
+    @Bean
+    public NewTopic followNotificationTopic() {
+        return new NewTopic(KafkaTopic.FOLLOWER_NOTIFICATION, 2, (short) 2);
+    }
 }

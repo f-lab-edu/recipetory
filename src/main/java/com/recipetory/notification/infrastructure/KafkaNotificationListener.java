@@ -25,6 +25,7 @@ public class KafkaNotificationListener {
 
     /**
      * 도착한 message 정보를 토대로 notification save를 진행한다.
+     * notification sender와 receiever가 정해져있다.
      * @param notificationMessage sent kafka message
      */
     @KafkaListener(topics = KafkaTopic.NOTIFICATION,
@@ -33,46 +34,40 @@ public class KafkaNotificationListener {
     @Transactional
     public void notificationListener(NotificationMessage notificationMessage) {
         NotificationType type = notificationMessage.getNotificationType();
+        User sender = getUserById(notificationMessage.getSenderId());
+        User receiver = getUserById(notificationMessage.getReceiverId());
 
-        if (type == NotificationType.NEW_RECIPE) {
-            // 팔로워들 전체에게 알림
-            saveNotificationToFollowers(notificationMessage);
-        } else {
-            saveNotification(notificationMessage);
-        }
+        Notification notification = Notification.builder()
+                .sender(sender).receiver(receiver).notificationType(type)
+                .path(notificationMessage.getPath())
+                .message(type.getDefaultMessage(sender)).build();
+
+        notificationRepository.save(notification);
     }
 
+    /**
+     * 도착한 message 정보를 토대로 notification save를 진행한다.
+     * notification sender의 팔로워들에게 알림을 일괄적으로 보낸다.
+     * @param notificationMessage sent kafka message
+     */
+    @KafkaListener(topics = KafkaTopic.FOLLOWER_NOTIFICATION,
+            containerFactory = "notificationKafkaListenerContainerFactory",
+            groupId = "${spring.kafka.group-id}")
     @Transactional
-    public void saveNotificationToFollowers(NotificationMessage notificationMessage) {
-        User sender = getUserById(notificationMessage.getSenderId());
+    public void followerNotificationListener(NotificationMessage notificationMessage) {
         NotificationType type = notificationMessage.getNotificationType();
+        User sender = getUserById(notificationMessage.getSenderId());
 
         followRepository.findByFollowed(sender).forEach(follow -> {
-            User receiver = follow.getFollowing();
+            User follower = follow.getFollowing();
 
             Notification notification = Notification.builder()
-                    .sender(sender).receiver(receiver)
-                    .message(type.getDefaultMessage(sender))
+                    .sender(sender).receiver(follower).notificationType(type)
                     .path(notificationMessage.getPath())
-                    .notificationType(type).build();
+                    .message(type.getDefaultMessage(sender)).build();
 
             notificationRepository.save(notification);
         });
-    }
-
-    @Transactional
-    public void saveNotification(NotificationMessage notificationMessage) {
-        User sender = getUserById(notificationMessage.getSenderId());
-        User receiver = getUserById(notificationMessage.getReceiverId());
-        NotificationType type = notificationMessage.getNotificationType();
-
-        Notification notification = Notification.builder()
-                .sender(sender).receiver(receiver)
-                .message(type.getDefaultMessage(sender))
-                .path(notificationMessage.getPath())
-                .notificationType(type).build();
-
-        notificationRepository.save(notification);
     }
 
     @Transactional
