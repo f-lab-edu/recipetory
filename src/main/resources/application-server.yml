@@ -7,6 +7,10 @@ spring:
     url: jdbc:mysql://10.178.0.3:3306/recipetory?useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
     username: root
     password: ${MYSQL_PW}
+  data:
+    elasticsearch:
+      hosts: 10.178.0.10,10.178.0.11
+      port: 9200
   jpa:
     properties:
       hibernate:

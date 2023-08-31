@@ -1,4 +1,8 @@
 spring:
+  data:
+    elasticsearch:
+      hosts: localhost
+      port: 9200
   kafka:
     bootstrap-servers: localhost:9092
     group-id: recipetory-test
