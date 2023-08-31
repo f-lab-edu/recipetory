@@ -41,7 +41,7 @@ public class RecipeSearchController {
      */
     @GetMapping("/recipes")
     public ResponseEntity<RecipeListDto> searchRecipe(
-            @RequestParam(name = "q", defaultValue = "UNDEFINED") String title,
+            @RequestParam(name = "q", defaultValue = "") String title,
             @RequestParam(name = "t", defaultValue = "UNDEFINED") String cookingTime,
             @RequestParam(name = "d", defaultValue = "UNDEFINED") String difficulty,
             @RequestParam(name = "s", defaultValue = "UNDEFINED") String serving
