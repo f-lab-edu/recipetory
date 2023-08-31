@@ -37,19 +37,6 @@ public class TagController {
     }
 
     /**
-     * 특정 tag의 레시피를 검색한다
-     * @param tagName
-     * @return
-     */
-    @GetMapping("/tags")
-    public ResponseEntity<RecipeListDto> getRecipesByTagName(
-            @RequestParam(name = "tag", required = true) TagName tagName
-    ) {
-        List<Recipe> recipes = tagService.getRecipeByTag(tagName);
-        return ResponseEntity.ok(RecipeListDto.fromEntityList(recipes));
-    }
-
-    /**
      * 특정 레시피의 태그 목록을 불러온다.
      * @param recipeId
      * @return

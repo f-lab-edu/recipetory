@@ -1,7 +1,10 @@
 package com.recipetory.recipe.domain;
 
+import com.recipetory.tag.domain.TagName;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+
+import java.util.Arrays;
 
 @RequiredArgsConstructor
 @Getter
@@ -16,4 +19,11 @@ public enum CookingTime {
     UNDEFINED("선택안함");
 
     private final String description;
+
+    public static CookingTime fromString(String input) {
+        return Arrays.stream(CookingTime.values())
+                .filter(cookingTime -> cookingTime.name()
+                        .equalsIgnoreCase(input))
+                .findAny().orElse(UNDEFINED);
+    }
 }
