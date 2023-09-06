@@ -14,7 +14,7 @@ import org.springframework.transaction.event.TransactionalEventListener;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class CreateDocumentListener {
+public class DocumentListener {
     private final KafkaDocumentMessageSender documentMessageSender;
 
     /**
@@ -28,5 +28,12 @@ public class CreateDocumentListener {
                 createRecipeEvent.getRecipe());
 
         documentMessageSender.sendRecipeDocument(document);
+    }
+
+    @TransactionalEventListener
+    @Async
+    public void deleteRecipeDocument(DeleteRecipeEvent deleteRecipeEvent) {
+        documentMessageSender.sendDeleteRecipeDocument(
+                deleteRecipeEvent.getRecipeId());
     }
 }

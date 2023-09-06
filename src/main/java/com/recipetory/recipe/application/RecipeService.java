@@ -4,6 +4,7 @@ import com.recipetory.ingredient.application.IngredientService;
 import com.recipetory.ingredient.domain.RecipeIngredient;
 import com.recipetory.ingredient.presentation.dto.RecipeIngredientDto;
 import com.recipetory.notification.domain.event.CreateRecipeEvent;
+import com.recipetory.notification.domain.event.DeleteRecipeEvent;
 import com.recipetory.recipe.domain.Recipe;
 import com.recipetory.recipe.domain.RecipeRepository;
 import com.recipetory.recipe.domain.document.RecipeDocument;
@@ -11,6 +12,7 @@ import com.recipetory.recipe.presentation.dto.RecipeDto;
 import com.recipetory.user.domain.Role;
 import com.recipetory.user.domain.User;
 import com.recipetory.user.domain.UserRepository;
+import com.recipetory.user.domain.exception.NotOwnerException;
 import com.recipetory.utils.exception.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,7 +36,7 @@ public class RecipeService {
                                List<RecipeIngredientDto> ingredients,
                                String authorEmail) {
         // 1. validate user role
-        User author = findUserByEmail(authorEmail);
+        User author = getUserByEmail(authorEmail);
         author.verifyUserHasRole(Role.USER);
 
         // 2. ingredient -> recipeIngredient
@@ -85,13 +87,32 @@ public class RecipeService {
      * @param recipeId
      */
     @Transactional
-    public void deleteRecipeById(Long recipeId) {
+    public void deleteRecipeById(Long recipeId, String logInEmail) {
+        // 레시피 작성자만 삭제 가능
+        Recipe found = recipeRepository.findById(recipeId)
+                .orElseThrow(() -> new EntityNotFoundException("Recipe", String.valueOf(recipeId)));
+        validateRecipeAuthor(found, getUserByEmail(logInEmail));
+
         recipeRepository.deleteById(recipeId);
+        eventPublisher.publishEvent(new DeleteRecipeEvent(recipeId));
     }
 
+    /**
+     * 레시피의 작성자가 맞는지 확인한다.
+     * @param recipe target recipe
+     * @param author expected author
+     * @throws NotOwnerException author 아닐 경우
+     */
+    @Transactional(readOnly = true)
+    private void validateRecipeAuthor(Recipe recipe, User author) {
+        if (!recipe.isSameAuthor(author)) {
+            throw new NotOwnerException(author.getId(), recipe.getAuthor().getId(),
+                    "Recipe", String.valueOf(recipe.getId()));
+        }
+    }
 
-    @Transactional
-    private User findUserByEmail(String email) {
+    @Transactional(readOnly = true)
+    public User getUserByEmail(String email) {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new EntityNotFoundException("User",email));
     }

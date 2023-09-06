@@ -66,9 +66,10 @@ public class RecipeController {
      */
     @DeleteMapping("/recipes/{recipeId}")
     public ResponseEntity<Void> deleteRecipe(
-            @PathVariable("recipeId") Long recipeId
+            @PathVariable("recipeId") Long recipeId,
+            @LogInUser SessionUser logInUser
     ) {
-        recipeService.deleteRecipeById(recipeId);
+        recipeService.deleteRecipeById(recipeId,logInUser.getEmail());
         return ResponseEntity.ok().build();
     }
 }

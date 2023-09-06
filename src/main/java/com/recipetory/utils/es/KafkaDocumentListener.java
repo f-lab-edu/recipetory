@@ -25,4 +25,12 @@ public class KafkaDocumentListener {
         log.info("recipe document id {} 저장", document.getId());
         recipeDocumentRepository.save(document);
     }
+
+    @KafkaListener(topics = KafkaTopic.DELETE_RECIPE,
+            containerFactory = "deleteDocumentKafkaListenerContainerFactory",
+            groupId = "${spring.kafka.group-id}")
+    public void deleteDocumentListener(Long recipeId) {
+        log.info("recipe document id {} 삭제",recipeId);
+        recipeDocumentRepository.deleteById(recipeId);
+    }
 }

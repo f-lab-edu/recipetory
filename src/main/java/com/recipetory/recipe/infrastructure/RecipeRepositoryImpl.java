@@ -55,6 +55,5 @@ public class RecipeRepositoryImpl implements RecipeRepository {
     @Override
     public void deleteById(Long id) {
         recipeJpaRepository.deleteById(id);
-        recipeDocumentRepository.deleteById(id);
     }
 }
