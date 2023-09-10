@@ -26,6 +26,10 @@ public class KafkaDocumentListener {
         recipeDocumentRepository.save(document);
     }
 
+    /**
+     * Kafka message로 도착한 RecipeDocument id를 삭제한다.
+     * @param recipeId
+     */
     @KafkaListener(topics = KafkaTopic.DELETE_RECIPE,
             containerFactory = "deleteDocumentKafkaListenerContainerFactory",
             groupId = "${spring.kafka.group-id}")

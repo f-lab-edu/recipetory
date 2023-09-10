@@ -32,7 +32,8 @@ public class KafkaNotificationListener {
             containerFactory = "notificationKafkaListenerContainerFactory",
             groupId = "${spring.kafka.group-id}")
     @Transactional
-    public void notificationListener(NotificationMessage notificationMessage) {
+    public void saveNotification(NotificationMessage notificationMessage) {
+        log.info("notification message consume : {}",notificationMessage.getPath());
         NotificationType type = notificationMessage.getNotificationType();
         User sender = getUserById(notificationMessage.getSenderId());
         User receiver = getUserById(notificationMessage.getReceiverId());
@@ -54,7 +55,8 @@ public class KafkaNotificationListener {
             containerFactory = "notificationKafkaListenerContainerFactory",
             groupId = "${spring.kafka.group-id}")
     @Transactional
-    public void followerNotificationListener(NotificationMessage notificationMessage) {
+    public void saveFollowerNotification(NotificationMessage notificationMessage) {
+        log.info("follower-notification message consume : {}",notificationMessage.getPath());
         NotificationType type = notificationMessage.getNotificationType();
         User sender = getUserById(notificationMessage.getSenderId());
 

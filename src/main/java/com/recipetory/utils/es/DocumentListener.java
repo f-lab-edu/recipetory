@@ -30,6 +30,10 @@ public class DocumentListener {
         documentMessageSender.sendRecipeDocument(document);
     }
 
+    /**
+     * 삭제된 recipe Entity를 document에도 반영하기 위해 kafka message를 보낸다.
+     * @param deleteRecipeEvent
+     */
     @TransactionalEventListener
     @Async
     public void deleteRecipeDocument(DeleteRecipeEvent deleteRecipeEvent) {
