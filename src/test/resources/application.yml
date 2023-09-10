@@ -1,6 +1,10 @@
 spring:
+  data:
+    elasticsearch:
+      hosts: localhost
+      port: 9200
   kafka:
-    bootstrap-servers: localhost:9092
+    bootstrap-servers: localhost:9093
     group-id: recipetory-test
     consumer:
       auto-offset-reset: earliest

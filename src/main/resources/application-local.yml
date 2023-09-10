@@ -7,13 +7,17 @@ spring:
     url: jdbc:mysql://${MYSQL_HOST}:3306/recipetory?useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
     username: root
     password: ${MYSQL_PW}
+  data:
+    elasticsearch:
+      hosts: localhost
+      port: 9200
   jpa:
     properties:
       hibernate:
         default_batch_fetch_size: 1000
 #        show_sql: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
   security:
     oauth2:
       client:

@@ -3,6 +3,7 @@ package com.recipetory.recipe.presentation;
 import com.recipetory.config.auth.argumentresolver.LogInUser;
 import com.recipetory.config.auth.dto.SessionUser;
 import com.recipetory.ingredient.presentation.dto.RecipeIngredientDto;
+import com.recipetory.recipe.application.RecipeSearchService;
 import com.recipetory.recipe.application.RecipeService;
 import com.recipetory.recipe.domain.Recipe;
 import com.recipetory.recipe.presentation.dto.CreateRecipeDto;
@@ -17,11 +18,11 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/recipes")
 @RequiredArgsConstructor
 @Slf4j
 public class RecipeController {
     private final RecipeService recipeService;
+    private final RecipeSearchService recipeSearchService;
 
     /**
      * request body로 요청된 recipe를 생성한다.
@@ -29,7 +30,7 @@ public class RecipeController {
      * @param logInUser
      * @return
      */
-    @PostMapping
+    @PostMapping("/recipes")
     public ResponseEntity<CreateRecipeDto.Response> postRecipe(
             @RequestBody @Valid CreateRecipeDto.Request request,
             @LogInUser SessionUser logInUser) {
@@ -50,7 +51,7 @@ public class RecipeController {
      * @param recipeId
      * @return
      */
-    @GetMapping("/{recipeId}")
+    @GetMapping("/recipes/{recipeId}")
     public ResponseEntity<RecipeDto> findByRecipeId(
             @PathVariable("recipeId") Long recipeId) {
 
@@ -59,29 +60,16 @@ public class RecipeController {
     }
 
     /**
-     * query parameter의 문자열을 title에 포함한 레시피를 검색한다.
-     * @param keyWord 검색 문자열
-     * @return recipe list dto
-     */
-    @GetMapping
-    public ResponseEntity<RecipeListDto> searchRecipe(
-            @RequestParam(name = "q", defaultValue = "") String keyWord
-    ) {
-        RecipeListDto found = recipeService.findRecipeByTitleContains(
-                keyWord.trim());
-        return ResponseEntity.ok(found);
-    }
-
-    /**
      * path variable에 해당하는 id를 가진 레시피를 삭제한다.
      * @param recipeId path variable
      * @return
      */
-    @DeleteMapping("/{recipeId}")
+    @DeleteMapping("/recipes/{recipeId}")
     public ResponseEntity<Void> deleteRecipe(
-            @PathVariable("recipeId") Long recipeId
+            @PathVariable("recipeId") Long recipeId,
+            @LogInUser SessionUser logInUser
     ) {
-        recipeService.deleteRecipeById(recipeId);
+        recipeService.deleteRecipeById(recipeId,logInUser.getEmail());
         return ResponseEntity.ok().build();
     }
 }

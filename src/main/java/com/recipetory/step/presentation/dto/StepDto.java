@@ -1,5 +1,6 @@
 package com.recipetory.step.presentation.dto;
 
+import com.recipetory.recipe.domain.document.StepDocument;
 import com.recipetory.step.domain.Step;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
@@ -33,6 +34,13 @@ public class StepDto {
     public Step toEntity() {
         return Step.builder()
                 .stepNumber(stepNumber).description(description)
+                .build();
+    }
+
+    public static StepDto fromDocument(StepDocument stepDocument) {
+        return StepDto.builder()
+                .stepNumber(stepDocument.getStepNumber())
+                .description(stepDocument.getDescription())
                 .build();
     }
 }

@@ -4,15 +4,15 @@ import com.recipetory.ingredient.application.IngredientService;
 import com.recipetory.ingredient.domain.RecipeIngredient;
 import com.recipetory.ingredient.presentation.dto.RecipeIngredientDto;
 import com.recipetory.notification.domain.event.CreateRecipeEvent;
+import com.recipetory.notification.domain.event.DeleteRecipeEvent;
 import com.recipetory.recipe.domain.Recipe;
 import com.recipetory.recipe.domain.RecipeRepository;
+import com.recipetory.recipe.domain.document.RecipeDocument;
 import com.recipetory.recipe.presentation.dto.RecipeDto;
-import com.recipetory.recipe.presentation.dto.RecipeListDto;
-import com.recipetory.step.domain.Step;
-import com.recipetory.tag.domain.Tag;
 import com.recipetory.user.domain.Role;
 import com.recipetory.user.domain.User;
 import com.recipetory.user.domain.UserRepository;
+import com.recipetory.user.domain.exception.NotOwnerException;
 import com.recipetory.utils.exception.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +20,6 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -37,7 +36,7 @@ public class RecipeService {
                                List<RecipeIngredientDto> ingredients,
                                String authorEmail) {
         // 1. validate user role
-        User author = findUserByEmail(authorEmail);
+        User author = getUserByEmail(authorEmail);
         author.verifyUserHasRole(Role.USER);
 
         // 2. ingredient -> recipeIngredient
@@ -66,15 +65,8 @@ public class RecipeService {
      */
     @Transactional
     public RecipeDto getCompleteRecipe(Long recipeId) {
-        Recipe found = getRecipeById(recipeId);
-        User author = found.getAuthor();
-        List<Step> steps = found.getSteps();
-        List<RecipeIngredient> ingredients = found.getIngredients();
-        List<Tag> tags = found.getTags();
-
-        RecipeDto recipeDto = RecipeDto.fromEntity(found);
-        recipeDto.setRelations(author, steps, ingredients, tags);
-        return recipeDto;
+        RecipeDocument found = recipeRepository.getDocumentById(recipeId);
+        return RecipeDto.fromDocument(found);
     }
 
     /**
@@ -89,34 +81,38 @@ public class RecipeService {
     }
 
     /**
-     * 인자로 들어온 문자열을 title에 포함한 레시피를 검색한다.
-     * @param word search keyword
-     * @return recipe list dto
-     */
-    @Transactional(readOnly = true)
-    public RecipeListDto findRecipeByTitleContains(String word) {
-        if (word.isEmpty()) {
-            return RecipeListDto.fromEntityList(new ArrayList<>());
-        }
-
-        List<Recipe> found = recipeRepository.findByTitleContains(word);
-        return RecipeListDto.fromEntityList(found);
-    }
-
-    /**
      * 메소드 인자 id에 해당하는 레시피를 삭제한다.
      * casecadeType = ALL이기 때문에, 레시피와 연관 관계를 가진 엔티티들은 전부 삭제된다.
      * id에 해당하는 레시피가 없을 경우, jpa의 기본 설정에 따라 요청이 무시된다.
      * @param recipeId
      */
     @Transactional
-    public void deleteRecipeById(Long recipeId) {
+    public void deleteRecipeById(Long recipeId, String logInEmail) {
+        // 레시피 작성자만 삭제 가능
+        Recipe found = recipeRepository.findById(recipeId)
+                .orElseThrow(() -> new EntityNotFoundException("Recipe", String.valueOf(recipeId)));
+        validateRecipeAuthor(found, getUserByEmail(logInEmail));
+
         recipeRepository.deleteById(recipeId);
+        eventPublisher.publishEvent(new DeleteRecipeEvent(recipeId));
     }
 
+    /**
+     * 레시피의 작성자가 맞는지 확인한다.
+     * @param recipe target recipe
+     * @param author expected author
+     * @throws NotOwnerException author 아닐 경우
+     */
+    @Transactional(readOnly = true)
+    private void validateRecipeAuthor(Recipe recipe, User author) {
+        if (!recipe.isSameAuthor(author)) {
+            throw new NotOwnerException(author.getId(), recipe.getAuthor().getId(),
+                    "Recipe", String.valueOf(recipe.getId()));
+        }
+    }
 
-    @Transactional
-    private User findUserByEmail(String email) {
+    @Transactional(readOnly = true)
+    public User getUserByEmail(String email) {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new EntityNotFoundException("User",email));
     }

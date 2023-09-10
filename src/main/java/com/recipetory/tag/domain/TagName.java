@@ -3,6 +3,9 @@ package com.recipetory.tag.domain;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Arrays;
+import java.util.Optional;
+
 @RequiredArgsConstructor
 @Getter
 public enum TagName {
@@ -39,4 +42,10 @@ public enum TagName {
 
     private final String korean;
     private final TagType tagType;
+
+    public static Optional<TagName> fromString(String input) {
+        return Arrays.stream(TagName.values()).filter(
+                tagName -> tagName.name().equalsIgnoreCase(input))
+                .findAny();
+    }
 }

@@ -31,4 +31,14 @@ public class KafkaTopicConfig {
     public NewTopic followNotificationTopic() {
         return new NewTopic(KafkaTopic.FOLLOWER_NOTIFICATION, 2, (short) 2);
     }
+
+    @Bean
+    public NewTopic createRecipeTopic() {
+        return new NewTopic(KafkaTopic.NEW_RECIPE, 2, (short) 2);
+    }
+
+    @Bean
+    public NewTopic deleteRecipeTopic() {
+        return new NewTopic(KafkaTopic.DELETE_RECIPE, 2, (short) 2);
+    }
 }

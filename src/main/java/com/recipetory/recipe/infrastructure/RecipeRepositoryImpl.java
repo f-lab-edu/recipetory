@@ -1,7 +1,10 @@
 package com.recipetory.recipe.infrastructure;
 
-import com.recipetory.recipe.domain.Recipe;
-import com.recipetory.recipe.domain.RecipeRepository;
+import com.recipetory.recipe.domain.*;
+import com.recipetory.recipe.domain.document.RecipeDocument;
+import com.recipetory.tag.domain.TagName;
+import com.recipetory.user.domain.User;
+import com.recipetory.utils.exception.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -13,11 +16,8 @@ import java.util.Optional;
 public class RecipeRepositoryImpl implements RecipeRepository {
 
     private final RecipeJpaRepository recipeJpaRepository;
-
-    @Override
-    public Optional<Recipe> findByTitle(String title) {
-        return recipeJpaRepository.findByTitle(title);
-    }
+    private final RecipeDocumentRepository recipeDocumentRepository;
+    private final RecipeDocumentQueryService recipeQueryService;
 
     @Override
     public Recipe save(Recipe recipe) {
@@ -30,8 +30,26 @@ public class RecipeRepositoryImpl implements RecipeRepository {
     }
 
     @Override
-    public List<Recipe> findByTitleContains(String title) {
-        return recipeJpaRepository.findByTitleContains(title);
+    public RecipeDocument getDocumentById(Long id) {
+        return recipeDocumentRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Recipe", String.valueOf(id)));
+    }
+
+    @Override
+    public List<RecipeDocument> findByRecipeInfo(
+            String title, CookingTime cookingTime, Difficulty difficulty, Serving serving
+    ) {
+        return recipeQueryService.findByRecipeInfo(title, cookingTime, difficulty, serving);
+    }
+
+    @Override
+    public List<RecipeDocument> findByAuthor(User author) {
+        return recipeDocumentRepository.findByAuthorId(author.getId());
+    }
+
+    @Override
+    public List<RecipeDocument> findByTagNames(List<TagName> tagNames) {
+        return recipeQueryService.findByTagNames(tagNames);
     }
 
     @Override
