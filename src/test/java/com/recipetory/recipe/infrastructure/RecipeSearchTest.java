@@ -4,10 +4,10 @@ import com.recipetory.recipe.domain.*;
 import com.recipetory.recipe.domain.document.RecipeDocument;
 import com.recipetory.tag.domain.TagName;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDateTime;
@@ -17,7 +17,8 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-public class RecipeEsTest {
+@AutoConfigureTestDatabase
+public class RecipeSearchTest {
     @Autowired
     private RecipeDocumentRepository recipeDocumentRepository;
     @Autowired
@@ -28,7 +29,7 @@ public class RecipeEsTest {
         recipeDocumentRepository.deleteAll();
     }
     @Test
-    @DisplayName("tag가 모두 들어있는 레시피를 검색한다.")
+    @DisplayName("검색하려는 tag가 모두 들어있는 레시피를 검색한다.")
     public void tagsSearchTest() {
         // given : recipe1은 BOIL, DIET, BREAD 태그를
         //         recipe2는 BOIL, DIET 태그를 갖는다.
