@@ -1,7 +1,7 @@
 package com.recipetory.ingredient.presentation.dto;
 
-import com.recipetory.ingredient.domain.Ingredient;
 import com.recipetory.ingredient.domain.RecipeIngredient;
+import com.recipetory.recipe.domain.document.IngredientDocument;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -31,6 +31,14 @@ public class RecipeIngredientDto {
         return RecipeIngredientDto.builder()
                 .name(recipeIngredient.getIngredient().getName())
                 .amount(recipeIngredient.getAmount())
+                .build();
+    }
+
+    public static RecipeIngredientDto fromDocument(
+            IngredientDocument ingredientDocument) {
+        return RecipeIngredientDto.builder()
+                .name(ingredientDocument.getName())
+                .amount(ingredientDocument.getAmount())
                 .build();
     }
 }

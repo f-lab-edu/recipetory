@@ -9,11 +9,13 @@ import lombok.Getter;
 public class SessionUser {
     private String name;
     private String email;
+    private Long id;
 
     public static SessionUser fromEntity(User user) {
         return SessionUser.builder()
                 .email(user.getEmail())
                 .name(user.getName())
+                .id(user.getId())
                 .build();
     }
 }

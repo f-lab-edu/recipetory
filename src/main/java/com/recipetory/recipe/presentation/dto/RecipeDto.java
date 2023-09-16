@@ -75,6 +75,7 @@ public class RecipeDto {
                 .information(recipe.getRecipeInfo())
                 .statistics(recipe.getRecipeStatistics())
                 .steps(recipe.getSteps().stream().map(StepDto::fromDocument).toList())
+                .ingredients(recipe.getIngredients().stream().map(RecipeIngredientDto::fromDocument).toList())
                 .tags(recipe.getTags()).build();
     }
 }
