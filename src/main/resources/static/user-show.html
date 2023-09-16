@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>레시피토리</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9"
+      crossorigin="anonymous"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  </head>
+  <body class="d-flex flex-column min-vh-100">
+    <header class="text-center p-4" style="background-color: #d1e7dc">
+      <h1 class="display-4">
+        <img
+          width="60"
+          height="60"
+          src="/view/logo.png"
+          alt="external-Salad-international-food-goofy-flat-kerismaker"
+        />
+        <a href="/" style="color: black; text-decoration: none">RECIPETORY</a>
+      </h1>
+      <p class="lead">맛있는 레시피를 공유하고 즐기세요!</p>
+      <div class="justify-content-center row">
+        <div class="col-md-8">
+          <form id="recipe-serach-form" action="/view/recipes" method="get">
+            <div class="input-group mb-3 px-5">
+              <input
+                type="text"
+                class="form-control"
+                placeholder="검색하고 싶은 레시피 제목을 작성하세요."
+                name="q"
+              />
+              <button
+                class="btn btn btn-outline-success"
+                type="submit"
+                id="search-button"
+              >
+                🔍 검색하기
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <ul
+          class="nav nav-fill mt-3 col-sm-10 col-lg-6"
+          id="recipetory-menu"
+        ></ul>
+      </div>
+    </header>
+
+    <div class="justify-content-center px-3 mb-5">
+      <section class="container my-3 d-flex flex-column align-items-center">
+        <div id="content-container" class="col-8 col-lg-6"></div>
+      </section>
+    </div>
+
+    <div class="justify-content-center px-3 mb-5">
+      <section class="container my-3 d-flex flex-column align-items-center">
+        <div id="content-title"></div>
+        <div id="recipe-container" class="row justify-content-center"></div>
+      </section>
+    </div>
+
+    <footer class="text-center py-4 mt-auto" style="background-color: #d1e7dc">
+      <p>&copy; 2023 Recipetory</p>
+      <p>
+        <a href="https://github.com/f-lab-edu/recipetory" style="color: #0c432a"
+          >BuchuKim</a
+        >
+      </p>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+      integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
+      integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
+      crossorigin="anonymous"
+    ></script>
+    <script src="/view/js/build-menu.js"></script>
+    <script>
+      const createUserCard = (user) => {
+        const card = document.createElement("div");
+        card.classList.add("card", "mb-3");
+
+        const cardBody = document.createElement("div");
+        cardBody.classList.add("card-body");
+
+        const name = document.createElement("h5");
+        name.textContent = user.name;
+        name.classList.add("card-title");
+
+        const bio = document.createElement("p");
+        bio.classList.add("card-text");
+        bio.textContent = user.bio;
+
+        cardBody.appendChild(name);
+        cardBody.appendChild(bio);
+
+        card.appendChild(cardBody);
+
+        return card;
+      };
+
+      const userParams = window.location.pathname.split("/");
+      const userId = userParams[userParams.length - 1];
+      axios
+        .get("/" + userId)
+        .then(function (response) {
+          const user = response.data;
+          const container = document.querySelector("#content-container");
+
+          const userCard = createUserCard(user);
+          container.appendChild(userCard);
+        })
+        .catch(function (error) {
+          if (error.response != null && error.response.status === 404) {
+            alert("존재하지 않는 유저입니다!");
+          } else {
+            console.log("error fetching data:", error);
+          }
+        });
+    </script>
+    <script src="/view/js/recipe-list-card.js"></script>
+    <script>
+      axios
+        .get("/" + userId + "/recipes")
+        .then(function (response) {
+          const wrote = document.createElement("h2");
+          wrote.classList.add("mb-4");
+          wrote.textContent = "작성 레시피";
+          document.querySelector("#content-title").appendChild(wrote);
+
+          const recipes = response.data.recipes;
+          const container = document.querySelector("#recipe-container");
+
+          recipes.forEach((recipe) => {
+            const recipeCard = createRecipeCard(recipe);
+            container.appendChild(recipeCard);
+          });
+        })
+        .catch(function (error) {
+          console.log("error fetching data:", error);
+        });
+    </script>
+  </body>
+</html>

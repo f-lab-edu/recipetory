@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>레시피토리</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9"
+      crossorigin="anonymous"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  </head>
+  <body class="d-flex flex-column min-vh-100">
+    <header class="text-center p-4" style="background-color: #d1e7dc">
+      <h1 class="display-4">
+        <img
+          width="60"
+          height="60"
+          src="/view/logo.png"
+          alt="external-Salad-international-food-goofy-flat-kerismaker"
+        />
+        <a href="/" style="color: black; text-decoration: none">RECIPETORY</a>
+      </h1>
+      <p class="lead">맛있는 레시피를 공유하고 즐기세요!</p>
+      <div class="row justify-content-center">
+        <div class="col-md-8">
+          <form id="recipe-serach-form" action="/view/recipes" method="get">
+            <div class="input-group mb-3 px-5">
+              <input
+                type="text"
+                class="form-control"
+                placeholder="검색하고 싶은 레시피 제목을 작성하세요."
+                name="q"
+              />
+              <button
+                class="btn btn btn-outline-success"
+                type="submit"
+                id="search-button"
+              >
+                🔍 검색하기
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <ul
+          class="nav nav-fill mt-3 col-sm-10 col-lg-6"
+          id="recipetory-menu"
+        ></ul>
+      </div>
+    </header>
+    <div class="justify-content-center px-3 mb-5">
+      <section class="container my-3">
+        <div class="row justify-content-center">
+          <div class="col-md-8 col-lg-6">
+            <h1 class="text-center my-3">✍️ 레시피 작성</h1>
+            <div class="card">
+              <div class="card-body">
+                <form id="recipe-form" class="needs-validation" novalidate>
+                  <div class="mb-3">
+                    <label for="recipe-title" class="mb-1 fw-bold"
+                      ><h4>📚 레시피 제목</h4></label
+                    >
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="recipe-title"
+                      name="title"
+                      placeholder="레시피 제목을 입력해주세요 (ex. 맛있는 시금치 파스타)"
+                      required
+                    />
+                  </div>
+
+                  <div class="mb-3">
+                    <label for="recipe-description mb-1" class="mb-1 fw-bold"
+                      ><h4>📃 레시피 설명</h4></label
+                    >
+                    <textarea
+                      class="form-control"
+                      id="recipe-description"
+                      name="description"
+                      rows="3"
+                      placeholder="1000자 이내의 레시피 설명을 입력해주세요 (ex. 시금치의 향과 식감을 즐길 수 있는 파스타입니다. 간편하게 해먹기 좋아요.)"
+                      required
+                    ></textarea>
+                  </div>
+
+                  <div class="mb-3">
+                    <label for="cookingTime" class="fw-bold"
+                      ><h4>⏰ 소요 시간</h4></label
+                    >
+                    <select
+                      class="form-select"
+                      id="cookingTime"
+                      name="cookingTime"
+                    >
+                      <option value="UNDEFINED">선택안함</option>
+                      <option value="LESS_THAN_10">10분 이내</option>
+                      <option value="LESS_THAN_20">20분 이내</option>
+                      <option value="LESS_THAN_30">30분 이내</option>
+                      <option value="LESS_THAN_60">1시간 이내</option>
+                      <option value="LESS_THAN_90">1시간 30분 이내</option>
+                      <option value="LESS_THAN_120">2시간 이내</option>
+                      <option value="MORE_THAN_120">2시간 이상</option>
+                    </select>
+                  </div>
+
+                  <div class="mb-3">
+                    <label for="difficulty" class="fw-bold"
+                      ><h4>❓ 난이도</h4></label
+                    >
+                    <select
+                      class="form-select"
+                      id="difficulty"
+                      name="difficulty"
+                    >
+                      <option value="UNDEFINED">선택안함</option>
+                      <option value="EASY">쉬움</option>
+                      <option value="NORMAL">보통</option>
+                      <option value="HARD">어려움</option>
+                    </select>
+                  </div>
+
+                  <div class="mb-3">
+                    <label for="serving" class="fw-bold"
+                      ><h4>👩‍👧 분량</h4></label
+                    >
+                    <select class="form-select" id="serving" name="serving">
+                      <option value="UNDEFINED">선택안함</option>
+                      <option value="ONE">1인분</option>
+                      <option value="TWO">2인분</option>
+                      <option value="THREE">3인분</option>
+                      <option value="FOUR">4인분</option>
+                      <option value="MORE">5인분 이상</option>
+                    </select>
+                  </div>
+
+                  <div class="mb-1">
+                    <label for="recipe-steps" class="mb-1 fw-bold"
+                      ><h4>🍴 단계</h4></label
+                    >
+                    <div id="step-input">
+                      <textarea
+                        class="form-control mb-2"
+                        name="steps[]"
+                        rows="2"
+                        placeholder="조리 과정을 입력해주세요. (ex. 물 2리터에 소금을 조금 넣고 끓이고, 시금치는 뿌리 부분을 잘라 준비합니다.)"
+                        required
+                      ></textarea>
+                    </div>
+                    <div
+                      class="d-flex justify-content-between align-items-center mt-2"
+                    >
+                      <div class="ms-auto">
+                        <button
+                          type="button"
+                          class="btn btn-outline-success btn-sm"
+                          onclick="addStepForm()"
+                        >
+                          단계 추가
+                        </button>
+                        <button
+                          type="button"
+                          class="btn btn-outline-danger btn-sm"
+                          onclick="deleteStepForm()"
+                        >
+                          단계 삭제
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="mb-3">
+                    <label for="recipe-steps" class="mb-1 fw-bold"
+                      ><h4>🥔 재료</h4></label
+                    >
+                    <div id="ingredient-input">
+                      <div class="input-group mb-1">
+                        <input
+                          type="text"
+                          name="ingredientName[]"
+                          class="form-control"
+                          placeholder="재료 이름 (ex. 파스타 면)"
+                          required
+                        />
+                        <input
+                          type="text"
+                          name="ingredientAmount[]"
+                          class="form-control"
+                          placeholder="재료 분량 (ex. 100g)"
+                          required
+                        />
+                      </div>
+                    </div>
+                    <div
+                      class="d-flex justify-content-between align-items-center mt-2"
+                    >
+                      <div class="ms-auto">
+                        <button
+                          type="button"
+                          class="btn btn-outline-success btn-sm"
+                          onclick="addIngredientForm()"
+                        >
+                          재료 추가
+                        </button>
+                        <button
+                          type="button"
+                          class="btn btn-outline-danger btn-sm"
+                          onclick="deleteIngredientForm()"
+                        >
+                          재료 삭제
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="mb-3">
+                    <div class="d-flex align-items-center mb-3">
+                      <h4 class="fw-bold">🏷️ 태그</h4>
+                      <span class="ms-3"
+                        >해당하는 태그를 모두 선택해주세요.</span
+                      >
+                    </div>
+                    <div class="row d-flex" id="tag-input"></div>
+                  </div>
+
+                  <div class="d-flex mt-5">
+                    <button
+                      type="submit"
+                      class="btn btn-success btn-lg mx-auto"
+                    >
+                      작성 완료
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <footer class="text-center py-4 mt-auto" style="background-color: #d1e7dc">
+      <p>&copy; 2023 Recipetory</p>
+      <p>
+        <a href="https://github.com/f-lab-edu/recipetory" style="color: #0c432a"
+          >BuchuKim</a
+        >
+      </p>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+      integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
+      integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
+      crossorigin="anonymous"
+    ></script>
+    <script src="/view/js/build-menu.js"></script>
+    <script src="/view/js/build-tag.js"></script>
+    <script>
+      (() => {
+        "use strict";
+
+        const forms = document.querySelectorAll(".needs-validation");
+
+        Array.from(forms).forEach((form) => {
+          form.addEventListener(
+            "submit",
+            (event) => {
+              if (!form.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+                alert("필요한 항목을 모두 입력해주세요!");
+              }
+
+              form.classList.add("was-validated");
+            },
+            true
+          );
+        });
+      })();
+    </script>
+    <script>
+      getAllTags().then((tags) => {
+        const tagDiv = document.querySelector("#tag-input");
+        tags.forEach((tag) => {
+          const tagElement = document.createElement("div");
+          tagElement.classList.add(
+            "col-4",
+            "d-flex",
+            "justify-content-center",
+            "mb-2"
+          );
+          tagElement.innerHTML = `
+                  <input
+                    type="checkbox"
+                    class="btn-check"
+                    name="tags[]"
+                    id="${tag.name}"
+                    value="${tag.name}"
+                    autocomplete="off"
+                  />
+                  <label class="btn btn-outline-dark" for="${tag.name}">#${tag.description}</label>
+          `;
+          tagDiv.appendChild(tagElement);
+        });
+      });
+
+      // recipe post
+      const recipeForm = document.querySelector("#recipe-form");
+      recipeForm.addEventListener("submit", function (event) {
+        event.preventDefault();
+        const formData = new FormData(event.target);
+        const jsonData = {};
+
+        jsonData["title"] = formData.get("title");
+        jsonData["description"] = formData.get("description");
+        jsonData["cookingTime"] = formData.get("cookingTime");
+        jsonData["difficulty"] = formData.get("difficulty");
+        jsonData["serving"] = formData.get("serving");
+
+        jsonData["steps"] = [];
+        const steps = formData.getAll("steps[]");
+        for (let i = 0; i < steps.length; i++) {
+          const step = { stepNumber: i, description: steps[i] };
+          jsonData["steps"].push(step);
+        }
+
+        jsonData["ingredients"] = [];
+        const ingredientNames = formData.getAll("ingredientName[]");
+        const ingredientAmounts = formData.getAll("ingredientAmount[]");
+        for (let i = 0; i < ingredientNames.length; i++) {
+          const ingredient = {
+            name: ingredientNames[i],
+            amount: ingredientAmounts[i],
+          };
+          jsonData["ingredients"].push(ingredient);
+        }
+
+        jsonData["tags"] = [];
+        const tags = formData.getAll("tags[]");
+        for (let i = 0; i < tags.length; i++) {
+          jsonData["tags"].push({ tagName: tags[i] });
+        }
+
+        axios
+          .post("/recipes", jsonData)
+          .then((response) => {
+            const created = response.data;
+            window.location.href = "/";
+          })
+          .catch((error) => {
+            if (error.response.status === 401) {
+              alert("로그인이 필요합니다!");
+              window.location.href = "/view/login";
+            } else {
+              console.log("error! : ", error);
+              alert(error);
+            }
+          });
+      });
+
+      function addIngredientForm() {
+        const ingredientDiv = document.querySelector("#ingredient-input");
+        const ingredientField = document.createElement("div");
+        ingredientField.classList.add("input-group", "mb-1");
+        ingredientField.innerHTML = `
+                        <input
+                          type="text"
+                          name="ingredientName[]"
+                          class="form-control"
+                          placeholder="재료 이름"
+                          required
+                        />
+                        <input
+                          type="text"
+                          name="ingredientAmount[]"
+                          class="form-control"
+                          placeholder="재료 분량"
+                          required
+                        />
+            `;
+        ingredientDiv.appendChild(ingredientField);
+      }
+
+      function deleteIngredientForm() {
+        const ingredientDiv = document.querySelector("#ingredient-input");
+        if (ingredientDiv.childElementCount >= 2) {
+          const lastChild = ingredientDiv.lastElementChild;
+          ingredientDiv.removeChild(lastChild);
+        } else {
+          alert("최소 1개 이상의 재료가 필요합니다.");
+        }
+      }
+
+      function addStepForm() {
+        const stepDiv = document.querySelector("#step-input");
+        const stepForm = document.createElement("textarea");
+        stepForm.classList.add("form-control", "mb-2");
+        stepForm.setAttribute("name", "steps[]");
+        stepForm.setAttribute("rows", "2");
+        stepForm.required = true;
+        stepForm.setAttribute("placeholder", "조리 과정을 입력해주세요");
+        stepDiv.appendChild(stepForm);
+      }
+
+      function deleteStepForm() {
+        const stepDiv = document.querySelector("#step-input");
+        if (stepDiv.childElementCount >= 2) {
+          const lastChild = stepDiv.lastElementChild;
+          stepDiv.removeChild(lastChild);
+        } else {
+          alert("최소 1개 이상의 조리 단계가 필요합니다.");
+        }
+      }
+    </script>
+  </body>
+</html>
