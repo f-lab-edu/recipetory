@@ -9,6 +9,7 @@ import com.recipetory.recipe.domain.Recipe;
 import com.recipetory.recipe.domain.RecipeRepository;
 import com.recipetory.recipe.domain.document.RecipeDocument;
 import com.recipetory.recipe.presentation.dto.RecipeDto;
+import com.recipetory.recipe.presentation.dto.RecipeListDto;
 import com.recipetory.user.domain.Role;
 import com.recipetory.user.domain.User;
 import com.recipetory.user.domain.UserRepository;
@@ -109,6 +110,16 @@ public class RecipeService {
             throw new NotOwnerException(author.getId(), recipe.getAuthor().getId(),
                     "Recipe", String.valueOf(recipe.getId()));
         }
+    }
+
+    /**
+     * index에 제공할 추천 레시피를 반환한다.
+     * @return featured(추천) recipe
+     */
+    @Transactional(readOnly = true)
+    public RecipeListDto getFeaturedRecipes() {
+        List<RecipeDocument> featured = recipeRepository.getFeatured();
+        return RecipeListDto.fromDocumentList(featured);
     }
 
     @Transactional(readOnly = true)

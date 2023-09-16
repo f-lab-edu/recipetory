@@ -53,6 +53,11 @@ public class RecipeRepositoryImpl implements RecipeRepository {
     }
 
     @Override
+    public List<RecipeDocument> getFeatured() {
+        return recipeQueryService.getTopRecipe(10);
+    }
+
+    @Override
     public void deleteById(Long id) {
         recipeJpaRepository.deleteById(id);
     }

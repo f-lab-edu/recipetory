@@ -22,7 +22,6 @@ import java.util.List;
 @Slf4j
 public class RecipeController {
     private final RecipeService recipeService;
-    private final RecipeSearchService recipeSearchService;
 
     /**
      * request body로 요청된 recipe를 생성한다.
@@ -71,5 +70,15 @@ public class RecipeController {
     ) {
         recipeService.deleteRecipeById(recipeId,logInUser.getEmail());
         return ResponseEntity.ok().build();
+    }
+
+    /**
+     * 추천하는 레시피 목록을 반환한다.
+     * @return
+     */
+    @GetMapping("/recipes/featured")
+    public ResponseEntity<RecipeListDto> getFeaturedRecipes() {
+        RecipeListDto featured = recipeService.getFeaturedRecipes();
+        return ResponseEntity.ok(featured);
     }
 }

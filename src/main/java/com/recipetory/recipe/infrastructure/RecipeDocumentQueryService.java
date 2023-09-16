@@ -1,6 +1,7 @@
 package com.recipetory.recipe.infrastructure;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import co.elastic.clients.elasticsearch._types.*;
 import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import co.elastic.clients.elasticsearch._types.query_dsl.TermQuery;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
@@ -76,6 +77,33 @@ public class RecipeDocumentQueryService {
                             .query(q -> q.bool(
                                     b -> b.must(infoQueries))),
                     RecipeDocument.class);
+            return response.hits().hits().stream().map(Hit::source).toList();
+        } catch (IOException e) {
+            throw new EsClientException("recipe");
+        }
+    }
+
+    /**
+     * view count, ratings를 기준으로 레시피를 내림차순으로 정렬하여
+     * 인자로 전달된 갯수만큼의 레시피를 반환한다.
+     * @param number
+     * @return recipe document
+     */
+    public List<RecipeDocument> getTopRecipe(int number) {
+        try {
+            // 평점(ratings), 조회수(viewCount)를 이용해 추천에 사용될 점수를 계산하는 script
+            String script = "doc['recipeStatistics.ratings'].value + " +
+                    "Math.log(1 + doc['recipeStatistics.viewCount'].value);";
+
+            // nested field의 값을 이용한 결과를 내림차순으로 정렬하는 쿼리 source
+            ScriptSort source = SortOptionsBuilders.script()
+                    .script(Script.of(sc -> sc.inline(InlineScript.of(i -> i.source(script)))))
+                    .type(ScriptSortType.Number)
+                    .order(SortOrder.Desc)
+                    .nested(NestedSortValue.of(sv -> sv.path("recipeStatistics"))).build();
+
+            SearchResponse<RecipeDocument> response = esClient.search(
+                    s -> s.index("recipe").size(number).sort(so -> so.script(source)), RecipeDocument.class);
             return response.hits().hits().stream().map(Hit::source).toList();
         } catch (IOException e) {
             throw new EsClientException("recipe");
