@@ -73,6 +73,12 @@ public class TestRecipeRepository implements RecipeRepository {
                 .map(RecipeDocument::fromEntity).toList();
     }
 
+    // TODO : featured recipe test
+    @Override
+    public List<RecipeDocument> getFeatured() {
+        return null;
+    }
+
     @Override
     public void deleteById(Long id) {
         recipes.stream().filter(recipe -> recipe.getId() == id)
