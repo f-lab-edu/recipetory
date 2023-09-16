@@ -7,6 +7,7 @@ import com.recipetory.recipe.presentation.dto.RecipeListDto;
 import com.recipetory.tag.application.TagService;
 import com.recipetory.tag.domain.TagName;
 import com.recipetory.tag.presentation.dto.TagDto;
+import com.recipetory.tag.presentation.dto.TagNameDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -64,5 +65,14 @@ public class TagController {
         tagService.deleteTag(tagId, logInEmail);
 
         return ResponseEntity.ok().build();
+    }
+
+    /**
+     * 어플리케이션에서 사용하는 전체 tag 리스트를 반환한다.
+     * @return
+     */
+    @GetMapping("/tags/all")
+    public ResponseEntity<List<TagNameDto>> getAllTags() {
+        return ResponseEntity.ok(TagNameDto.getAllTags());
     }
 }
