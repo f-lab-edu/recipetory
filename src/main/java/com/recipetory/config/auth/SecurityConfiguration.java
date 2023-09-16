@@ -15,10 +15,10 @@ import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
-@Profile("server")
 public class SecurityConfiguration {
 
     private final CustomOAuth2UserService customOAuth2UserService;
+    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
     // since spring security 6.1.2 : MvcRequestMatcher.Builder
     // https://github.com/spring-projects/spring-security-samples/tree/main/servlet/java-configuration/authentication/preauth
@@ -47,6 +47,7 @@ public class SecurityConfiguration {
                 .oauth2Login(oauth -> oauth
                         .userInfoEndpoint(userInfo ->
                                 userInfo.userService(customOAuth2UserService)))
+                .exceptionHandling(e -> e.authenticationEntryPoint(customAuthenticationEntryPoint))
                 .logout(logout -> logout
                         .logoutSuccessUrl("/")
                         .invalidateHttpSession(true));
