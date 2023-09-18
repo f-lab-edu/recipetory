@@ -29,6 +29,6 @@ public class RecipeIngredient {
             nullable = false)
     private Ingredient ingredient;
 
-    @Column(length = 10)
+    @Column(length = 20)
     private String amount;
 }
