@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -68,6 +68,7 @@
                       type="text"
                       class="form-control"
                       id="recipe-title"
+                      maxlength="30"
                       name="title"
                       placeholder="레시피 제목을 입력해주세요 (ex. 맛있는 시금치 파스타)"
                       required
@@ -83,6 +84,7 @@
                       id="recipe-description"
                       name="description"
                       rows="3"
+                      maxlength="1000"
                       placeholder="1000자 이내의 레시피 설명을 입력해주세요 (ex. 시금치의 향과 식감을 즐길 수 있는 파스타입니다. 간편하게 해먹기 좋아요.)"
                       required
                     ></textarea>
@@ -183,6 +185,7 @@
                           type="text"
                           name="ingredientName[]"
                           class="form-control"
+                          maxlength="20"
                           placeholder="재료 이름 (ex. 파스타 면)"
                           required
                         />
@@ -190,6 +193,7 @@
                           type="text"
                           name="ingredientAmount[]"
                           class="form-control"
+                          maxlength="20"
                           placeholder="재료 분량 (ex. 100g)"
                           required
                         />
@@ -243,14 +247,11 @@
       </section>
     </div>
 
-    <footer class="text-center py-4 mt-auto" style="background-color: #d1e7dc">
-      <p>&copy; 2023 Recipetory</p>
-      <p>
-        <a href="https://github.com/f-lab-edu/recipetory" style="color: #0c432a"
-          >BuchuKim</a
-        >
-      </p>
-    </footer>
+    <footer
+      class="text-center py-4 mt-auto"
+      style="background-color: #d1e7dc"
+      id="footer"
+    ></footer>
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script
@@ -263,7 +264,11 @@
       integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
       crossorigin="anonymous"
     ></script>
+    <script src="/view/js/build-footer.js"></script>
+    <script src="/view/js/auth.js"></script>
     <script src="/view/js/build-menu.js"></script>
+    <script src="/view/js/recipe.js"></script>
+    <script src="/view/js/build-reply.js"></script>
     <script src="/view/js/build-tag.js"></script>
     <script>
       (() => {
@@ -286,6 +291,12 @@
             true
           );
         });
+      })();
+    </script>
+    <script>
+      (async () => {
+        const auth = await getAuth();
+        buildMenu(auth);
       })();
     </script>
     <script>
@@ -355,6 +366,7 @@
           .post("/recipes", jsonData)
           .then((response) => {
             const created = response.data;
+            alert("레시피가 작성되었습니다!");
             window.location.href = "/";
           })
           .catch((error) => {
@@ -378,6 +390,7 @@
                           name="ingredientName[]"
                           class="form-control"
                           placeholder="재료 이름"
+                          maxlength="20"
                           required
                         />
                         <input
@@ -385,6 +398,7 @@
                           name="ingredientAmount[]"
                           class="form-control"
                           placeholder="재료 분량"
+                          maxlength="20"
                           required
                         />
             `;
@@ -407,6 +421,7 @@
         stepForm.classList.add("form-control", "mb-2");
         stepForm.setAttribute("name", "steps[]");
         stepForm.setAttribute("rows", "2");
+        stepForm.setAttribute("maxlength", "1000");
         stepForm.required = true;
         stepForm.setAttribute("placeholder", "조리 과정을 입력해주세요");
         stepDiv.appendChild(stepForm);

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -48,7 +48,7 @@
       </div>
       <div class="row justify-content-center">
         <ul
-          class="nav nav-fill mt-3 col-sm-10 col-lg-6"
+          class="nav nav-pills nav-justified mt-3 col-sm-10 col-lg-6"
           id="recipetory-menu"
         ></ul>
       </div>
@@ -78,14 +78,11 @@
       </div>
     </div>
 
-    <footer class="text-center py-4 mt-auto" style="background-color: #d1e7dc">
-      <p>&copy; 2023 Recipetory</p>
-      <p>
-        <a href="https://github.com/f-lab-edu/recipetory" style="color: #0c432a"
-          >BuchuKim</a
-        >
-      </p>
-    </footer>
+    <footer
+      class="text-center py-4 mt-auto"
+      style="background-color: #d1e7dc"
+      id="footer"
+    ></footer>
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script
@@ -98,9 +95,18 @@
       integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
       crossorigin="anonymous"
     ></script>
+    <script src="/view/js/build-footer.js"></script>
+    <script src="/view/js/auth.js"></script>
     <script src="/view/js/build-menu.js"></script>
-    <script src="/view/js/recipe-list-card.js"></script>
+    <script src="/view/js/recipe.js"></script>
     <script src="/view/js/build-tag.js"></script>
+    <script src="/view/js/recipe-list-card.js"></script>
+    <script>
+      (async () => {
+        const auth = await getAuth();
+        buildMenu(auth);
+      })();
+    </script>
     <script>
       getAllTags().then((tags) => {
         const tagDiv = document.querySelector("#tag-input");

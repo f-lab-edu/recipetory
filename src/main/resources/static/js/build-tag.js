@@ -5,10 +5,6 @@ const getAllTags = async () => {
   return tags.data;
 };
 
-(async () => {
-  allTags = await getAllTags();
-})();
-
 const getDescriptionOfTag = (tagName) => {
   return allTags.find((tag) => {
     return tag.name === tagName;
@@ -21,7 +17,6 @@ const getTagElement = (tag) => {
   tagElement.textContent = "#" + getDescriptionOfTag(tag);
   tagElement.style.color = "#0c432a";
   tagElement.style.textDecoration = "none";
-  // TODO
   tagElement.setAttribute("href", "/view/recipes/tags?t=" + tag);
 
   return tagElement;
