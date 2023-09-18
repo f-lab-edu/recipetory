@@ -108,6 +108,9 @@
       })();
     </script>
     <script>
+      const params = new URLSearchParams(window.location.search);
+      const searchTags = params.get("t") ? params.get("t").split(",") : [];
+
       getAllTags().then((tags) => {
         const tagDiv = document.querySelector("#tag-input");
         tags.forEach((tag) => {
@@ -118,17 +121,35 @@
             "justify-content-center",
             "mb-2"
           );
-          tagElement.innerHTML = `
-                  <input
-                    type="checkbox"
-                    class="btn-check"
-                    name="tags"
-                    id="${tag.name}"
-                    value="${tag.name}"
-                    autocomplete="off"
-                  />
-                  <label class="btn btn-outline-dark" for="${tag.name}">#${tag.description}</label>
-          `;
+
+          // tag.name이 "tags" 배열에 포함되어 있는지 확인
+          if (searchTags.includes(tag.name)) {
+            tagElement.innerHTML = `
+              <input
+                type="checkbox"
+                class="btn-check"
+                name="tags"
+                id="${tag.name}"
+                value="${tag.name}"
+                autocomplete="off"
+                checked
+              />
+              <label class="btn btn-outline-dark" for="${tag.name}">#${tag.description}</label>
+            `;
+          } else {
+            tagElement.innerHTML = `
+              <input
+                type="checkbox"
+                class="btn-check"
+                name="tags"
+                id="${tag.name}"
+                value="${tag.name}"
+                autocomplete="off"
+              />
+              <label class="btn btn-outline-dark" for="${tag.name}">#${tag.description}</label>
+            `;
+          }
+
           tagDiv.appendChild(tagElement);
         });
       });

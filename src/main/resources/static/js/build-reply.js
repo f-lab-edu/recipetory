@@ -71,9 +71,18 @@ const buildCommentsOfRecipe = (recipeId) => {
     .get("/recipe/" + recipeId + "/comments")
     .then((response) => {
       const comments = response.data.comments;
-      comments.forEach((comment) => {
-        commentSection.appendChild(buildCommentCard(comment));
-      });
+
+      if (comments.length) {
+        comments.forEach((comment) => {
+          commentSection.appendChild(buildCommentCard(comment));
+        });
+      } else {
+        commentSection.innerHTML = `
+          <p class="text-body-secondary text-center">
+            댓글이 존재하지 않습니다.
+          </p>
+          `;
+      }
       replySection.appendChild(commentSection);
     })
     .catch((error) => {
@@ -95,9 +104,19 @@ const buildReviewsOfRecipe = (recipeId) => {
     .get("/recipe/" + recipeId + "/reviews")
     .then((response) => {
       const reviews = response.data.reviews;
-      reviews.forEach((review) => {
-        reviewSection.appendChild(buildReviewCard(review));
-      });
+
+      if (reviews.length) {
+        reviews.forEach((review) => {
+          reviewSection.appendChild(buildReviewCard(review));
+        });
+      } else {
+        reviewSection.innerHTML = `
+          <p class="text-body-secondary text-center">
+            리뷰가 존재하지 않습니다.
+          </p>
+          `;
+      }
+
       replySection.appendChild(reviewSection);
     })
     .catch((error) => {

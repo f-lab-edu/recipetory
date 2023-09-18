@@ -164,16 +164,25 @@
         });
     </script>
     <script>
+      // 현재 페이지 유저가 작성한 레시피
       axios
         .get("/" + userId + "/recipes")
         .then(function (response) {
           authorRecipes = response.data.recipes;
           const container = document.querySelector("#content-container");
 
-          authorRecipes.forEach((recipe) => {
-            const recipeCard = createRecipeCard(recipe);
-            container.appendChild(recipeCard);
-          });
+          if (authorRecipes.length) {
+            authorRecipes.forEach((recipe) => {
+              const recipeCard = createRecipeCard(recipe);
+              container.appendChild(recipeCard);
+            });
+          } else {
+            container.innerHTML = `
+              <p class="text-body-secondary text-center">
+                레시피가 존재하지 않습니다.
+              </p>
+          `;
+          }
         })
         .catch(function (error) {
           console.log("error fetching data:", error);
@@ -191,20 +200,36 @@
             .then(function (response) {
               authorRecipes = response.data.recipes;
               const container = document.querySelector("#content-container");
-
-              authorRecipes.forEach((recipe) => {
-                const recipeCard = createRecipeCard(recipe);
-                container.appendChild(recipeCard);
-              });
+              if (authorRecipes.length) {
+                authorRecipes.forEach((recipe) => {
+                  const recipeCard = createRecipeCard(recipe);
+                  container.appendChild(recipeCard);
+                });
+              } else {
+                container.innerHTML = `
+                  <p class="text-body-secondary text-center">
+                     레시피가 존재하지 않습니다.
+                  </p>
+                `;
+              }
             })
             .catch(function (error) {
               console.log("error fetching data:", error);
             });
         }
-        authorRecipes.forEach((recipe) => {
-          const recipeCard = createRecipeCard(recipe);
-          container.appendChild(recipeCard);
-        });
+
+        if (authorRecipes.length) {
+          authorRecipes.forEach((recipe) => {
+            const recipeCard = createRecipeCard(recipe);
+            container.appendChild(recipeCard);
+          });
+        } else {
+          container.innerHTML = `
+            <p class="text-body-secondary text-center">
+                레시피가 존재하지 않습니다.
+            </p>
+          `;
+        }
       };
 
       const showBookMarkList = async () => {
@@ -215,10 +240,19 @@
         if (!bookMarkRecipes) {
           bookMarkRecipes = await getBookMarksOfUser(userId);
         }
-        bookMarkRecipes.forEach((recipe) => {
-          const recipeCard = createRecipeCard(recipe);
-          container.appendChild(recipeCard);
-        });
+
+        if (bookMarkRecipes.length) {
+          bookMarkRecipes.forEach((recipe) => {
+            const recipeCard = createRecipeCard(recipe);
+            container.appendChild(recipeCard);
+          });
+        } else {
+          container.innerHTML = `
+                  <p class="text-body-secondary text-center">
+                     레시피가 존재하지 않습니다.
+                  </p>
+                `;
+        }
       };
     </script>
   </body>

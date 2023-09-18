@@ -7,6 +7,7 @@ import com.recipetory.user.presentation.dto.EditUserDto;
 import com.recipetory.user.presentation.dto.ProfileDto;
 import com.recipetory.user.presentation.dto.UserDto;
 import com.recipetory.user.presentation.dto.UserListDto;
+import com.recipetory.utils.exception.EntityNotFoundException;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -27,11 +28,15 @@ public class UserController {
      */
     @GetMapping("/{userId}")
     public ResponseEntity<UserDto> showUser(
-            @PathVariable("userId") Long userId) {
-        UserDto found = UserDto.fromEntity(
-                userService.getUserById(userId));
-
-        return ResponseEntity.ok(found);
+            @PathVariable("userId") String userId) {
+        try {
+            UserDto found = UserDto.fromEntity(
+                    userService.getUserById(Long.valueOf(userId)));
+            return ResponseEntity.ok(found);
+        } catch (NumberFormatException e) {
+            // Long이 아닌 입력
+            throw new EntityNotFoundException("User",userId);
+        }
     }
 
     /**
