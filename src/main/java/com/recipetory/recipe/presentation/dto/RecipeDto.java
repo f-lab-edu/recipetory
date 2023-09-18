@@ -78,4 +78,8 @@ public class RecipeDto {
                 .ingredients(recipe.getIngredients().stream().map(RecipeIngredientDto::fromDocument).toList())
                 .tags(recipe.getTags()).build();
     }
+
+    public void setAuthorRelation(User author) {
+        this.author = UserDto.fromEntity(author);
+    }
 }

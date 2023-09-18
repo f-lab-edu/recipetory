@@ -67,7 +67,12 @@ public class RecipeService {
     @Transactional
     public RecipeDto getCompleteRecipe(Long recipeId) {
         RecipeDocument found = recipeRepository.getDocumentById(recipeId);
-        return RecipeDto.fromDocument(found);
+        User author = userRepository.findById(found.getAuthorId()).orElseThrow(() ->
+                new EntityNotFoundException("User", String.valueOf(found.getId())));
+
+        RecipeDto dto = RecipeDto.fromDocument(found);
+        dto.setAuthorRelation(author);
+        return dto;
     }
 
     /**
