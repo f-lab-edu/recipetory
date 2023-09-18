@@ -1,9 +1,16 @@
 let allTags;
 
 const getAllTags = async () => {
-  const tags = await axios.get("/tags/all");
-  return tags.data;
+  if (!allTags) {
+    const tags = await axios.get("/tags/all");
+    allTags = tags.data;
+  }
+  return allTags;
 };
+
+(() => {
+  getAllTags();
+})();
 
 const getDescriptionOfTag = (tagName) => {
   return allTags.find((tag) => {
