@@ -5,6 +5,8 @@ import com.recipetory.bookmark.domain.BookMarkRepository;
 import com.recipetory.bookmark.domain.exception.CannotBookMarkException;
 import com.recipetory.recipe.application.RecipeService;
 import com.recipetory.recipe.domain.Recipe;
+import com.recipetory.recipe.presentation.dto.RecipeDto;
+import com.recipetory.recipe.presentation.dto.RecipeListDto;
 import com.recipetory.user.application.UserService;
 import com.recipetory.user.domain.User;
 import lombok.RequiredArgsConstructor;
@@ -39,10 +41,13 @@ public class BookMarkService {
     }
 
     @Transactional(readOnly = true)
-    public List<BookMark> findBookMarkByUserId(Long userId) {
+    public RecipeListDto findBookMarkRecipeByUserId(Long userId) {
         User bookMarker = userService.getUserById(userId);
-
-        return bookMarkRepository.findByBookMarker(bookMarker);
+        List<BookMark> bookMarks = bookMarkRepository.findByBookMarker(bookMarker);
+        List<RecipeDto> bookMarkRecipes = bookMarks.stream()
+                .map(bookMark -> recipeService.getCompleteRecipe(bookMark.getRecipe().getId()))
+                .toList();
+        return new RecipeListDto(bookMarkRecipes);
     }
 
     @Transactional(readOnly = true)
