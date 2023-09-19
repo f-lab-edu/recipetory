@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface BookMarkJpaRepository extends JpaRepository<BookMark,Long> {
-    List<BookMark> findByBookMarker(User bookMarker);
+    List<BookMark> findTop100ByBookMarker(User bookMarker);
 
     List<BookMark> findByRecipe(Recipe recipe);
 

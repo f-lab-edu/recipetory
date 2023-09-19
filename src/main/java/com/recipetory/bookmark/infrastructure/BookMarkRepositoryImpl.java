@@ -22,7 +22,7 @@ public class BookMarkRepositoryImpl implements BookMarkRepository {
 
     @Override
     public List<BookMark> findByBookMarker(User bookMarker) {
-        return bookMarkJpaRepository.findByBookMarker(bookMarker);
+        return bookMarkJpaRepository.findTop100ByBookMarker(bookMarker);
     }
 
     @Override
