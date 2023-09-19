@@ -8,5 +8,5 @@ import java.util.List;
 
 @Repository
 public interface RecipeDocumentRepository extends ElasticsearchRepository<RecipeDocument, Long> {
-    List<RecipeDocument> findByAuthorId(Long authorId);
+    List<RecipeDocument> findTop100ByAuthorIdOrderByCreatedAt(Long authorId);
 }

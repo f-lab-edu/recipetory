@@ -24,5 +24,7 @@ public interface RecipeRepository {
 
     List<RecipeDocument> findByTagNames(List<TagName> tagNames);
 
+    List<RecipeDocument> getFeatured();
+
     void deleteById(Long id);
 }

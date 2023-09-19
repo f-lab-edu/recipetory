@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>레시피토리</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9"
+      crossorigin="anonymous"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  </head>
+  <body class="d-flex flex-column min-vh-100">
+    <header class="text-center p-4" style="background-color: #d1e7dc">
+      <h1 class="display-4">
+        <img
+          width="60"
+          height="60"
+          src="/view/logo.png"
+          alt="external-Salad-international-food-goofy-flat-kerismaker"
+        />
+        <a href="/" style="color: black; text-decoration: none">RECIPETORY</a>
+      </h1>
+      <p class="lead">맛있는 레시피를 공유하고 즐기세요!</p>
+      <div class="row justify-content-center">
+        <div class="col-md-8">
+          <form id="recipe-serach-form" action="/view/recipes" method="get">
+            <div class="input-group mb-3 px-5">
+              <input
+                type="text"
+                class="form-control"
+                placeholder="검색하고 싶은 레시피 제목을 작성하세요."
+                name="q"
+              />
+              <button
+                class="btn btn btn-outline-success"
+                type="submit"
+                id="search-button"
+              >
+                🔍 검색하기
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <ul
+          class="nav nav-fill mt-3 col-sm-10 col-lg-6"
+          id="recipetory-menu"
+        ></ul>
+      </div>
+    </header>
+    <div class="justify-content-center px-3 mb-5">
+      <section class="container my-3">
+        <div class="row justify-content-center">
+          <div class="col-md-8 col-lg-6">
+            <div class="card" id="recipe-card">
+              <div class="card-body">
+                <div class="d-flex align-items-center">
+                  <h2 class="card-title" id="recipe-title"></h2>
+                  <span id="author" class="ms-1"></span>
+                  <div class="ms-auto">
+                    <p class="badge text-bg-success">
+                      조회수 : <span id="view-count"></span>
+                    </p>
+                    <p class="badge text-bg-success">
+                      평점 : <span id="rating"></span>
+                    </p>
+                  </div>
+                </div>
+                <div class="mb-3" id="tags"></div>
+
+                <p class="card-text mb-4 mx-2" id="recipe-description"></p>
+                <div class="px-2">
+                  <p class="card-text">
+                    <strong>⏰ 소요 시간 :</strong>
+                    <span id="cooking-time">-</span>
+                  </p>
+                  <p class="card-text">
+                    <strong>❓ 난이도 :</strong> <span id="difficulty">-</span>
+                  </p>
+                  <p class="card-text">
+                    <strong>👩‍👧 분량 :</strong> <span id="serving">-</span>
+                  </p>
+                </div>
+
+                <h4 class="mt-4">🥔 재료</h4>
+                <ul class="list-group list-group-flush" id="ingredients"></ul>
+
+                <h4 class="mt-4">🍳 조리 방법</h4>
+                <ol
+                  class="list-group list-group-numbered list-group-flush"
+                  id="steps"
+                ></ol>
+
+                <div class="card-body d-flex">
+                  <div class="ms-auto d-flex">
+                    <button
+                      type="button"
+                      class="btn btn-outline-success btn-sm ms-1"
+                      onclick="addComment()"
+                    >
+                      댓글 보기
+                    </button>
+                    <button
+                      type="button"
+                      class="btn btn-outline-success btn-sm ms-1"
+                      onclick="addReview()"
+                    >
+                      리뷰 보기
+                    </button>
+                    <button
+                      type="button"
+                      class="btn btn-outline-success btn-sm ms-1"
+                      data-bs-toggle="modal"
+                      data-bs-target="#commentModal"
+                    >
+                      댓글 작성
+                    </button>
+                    <button
+                      type="button"
+                      class="btn btn-outline-success btn-sm ms-1"
+                      data-bs-toggle="modal"
+                      data-bs-target="#reviewModal"
+                    >
+                      리뷰 작성
+                    </button>
+                    <div class="btn-group" id="">
+                      <button
+                        class="btn btn-outline-success btn-sm dropdown-toggle mx-1"
+                        type="button"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"
+                      >
+                        추가 기능
+                      </button>
+                      <ul class="dropdown-menu" id="additional-menu">
+                        <li>
+                          <button
+                            class="dropdown-item"
+                            type="submit"
+                            onclick="addBookMark()"
+                          >
+                            북마크 추가
+                          </button>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row justify-content-center mt-4" id="reply-section"></div>
+      </section>
+
+      <!-- MODAL!! -->
+      <div
+        class="modal fade"
+        id="commentModal"
+        tabindex="-1"
+        aria-labelledby="commentModalLabel"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5" id="commentModalLabel">댓글 작성</h1>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <form id="comment-form" class="needs-validation" novalidate>
+              <div class="modal-body">
+                <div class="mb-3">
+                  <textarea
+                    class="form-control"
+                    id="comment-content"
+                    name="comment-content"
+                    rows="5"
+                    placeholder="궁금하거나 하고 싶은 얘기에 대해 댓글을 작성해주세요."
+                  ></textarea>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button
+                  type="button"
+                  class="btn btn-secondary"
+                  data-bs-dismiss="modal"
+                >
+                  닫기
+                </button>
+                <button type="submit" class="btn btn-success">댓글 작성</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      <div
+        class="modal fade"
+        id="reviewModal"
+        tabindex="-1"
+        aria-labelledby="reviewModalLabel"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5" id="reviewModalLabel">리뷰 작성</h1>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <form id="review-form" class="needs-validation" novalidate>
+              <div class="modal-body">
+                <div class="mb-3">
+                  <textarea
+                    class="form-control"
+                    id="reivew-content"
+                    name="review-content"
+                    rows="5"
+                    placeholder="레시피를 사용해본 리뷰를 작성해주세요."
+                  ></textarea>
+                </div>
+                <label for="rating" class="form-label fw-bold"
+                  >⭐️ 평점 (1~5점)</label
+                >
+                <div class="px-4">
+                  <input
+                    type="range"
+                    class="form-range"
+                    min="10"
+                    max="50"
+                    step="10"
+                    id="rating"
+                    name="rating"
+                  />
+                  <div class="d-flex justify-content-between">
+                    <span>1점</span>
+                    <span>2점</span>
+                    <span>3점</span>
+                    <span>4점</span>
+                    <span>5점</span>
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button
+                  type="button"
+                  class="btn btn-secondary"
+                  data-bs-dismiss="modal"
+                >
+                  닫기
+                </button>
+                <button type="submit" class="btn btn-success">리뷰 작성</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer
+      class="text-center py-4 mt-auto"
+      style="background-color: #d1e7dc"
+      id="footer"
+    ></footer>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+      integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
+      integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
+      crossorigin="anonymous"
+    ></script>
+    <script src="/view/js/build-footer.js"></script>
+    <script src="/view/js/auth.js"></script>
+    <script src="/view/js/build-menu.js"></script>
+    <script src="/view/js/recipe.js"></script>
+    <script src="/view/js/build-reply.js"></script>
+    <script src="/view/js/build-tag.js"></script>
+    <script src="/view/js/bookmark.js"></script>
+    <script src="/view/js/recipe-detail-card.js"></script>
+    <script>
+      (() => {
+        "use strict";
+
+        const forms = document.querySelectorAll(".needs-validation");
+
+        Array.from(forms).forEach((form) => {
+          form.addEventListener(
+            "submit",
+            (event) => {
+              if (!form.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+                alert("필요한 항목을 모두 입력해주세요!");
+              }
+
+              form.classList.add("was-validated");
+            },
+            true
+          );
+        });
+      })();
+    </script>
+    <script>
+      (async () => {
+        const auth = await getAuth();
+        buildMenu(auth);
+        buildRecipeDetailCard(auth);
+      })();
+    </script>
+    <script>
+      // comment, review 보기
+      const path = window.location.pathname.split("/");
+      const recipeId = path[path.length - 1];
+
+      const addComment = () => {
+        buildCommentsOfRecipe(recipeId);
+      };
+      const addReview = () => {
+        buildReviewsOfRecipe(recipeId);
+      };
+    </script>
+    <script>
+      // reply forms
+      // comment
+      const commentForm = document.querySelector("#comment-form");
+      commentForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const formData = new FormData(event.target);
+        const jsonData = {};
+
+        const path = window.location.pathname.split("/");
+        const recipeId = path[path.length - 1];
+        jsonData["recipeId"] = recipeId;
+        jsonData["content"] = formData.get("comment-content");
+
+        axios
+          .post("/comments", jsonData)
+          .then((response) => {
+            const created = response.data;
+            window.location.href = "/view/recipes/" + created.recipe.id;
+          })
+          .catch((error) => {
+            if (error.response.status === 401) {
+              alert("로그인이 필요합니다!");
+              window.location.href = "/view/login";
+            } else {
+              console.log("error! : ", error);
+              alert(error);
+            }
+          });
+      });
+
+      // reply forms
+      // review
+      const reviewForm = document.querySelector("#review-form");
+      reviewForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const formData = new FormData(event.target);
+        const jsonData = {};
+
+        const path = window.location.pathname.split("/");
+        const recipeId = path[path.length - 1];
+        jsonData["recipeId"] = recipeId;
+        jsonData["content"] = formData.get("review-content");
+        jsonData["rating"] = parseInt(formData.get("rating"));
+
+        axios
+          .post("/reviews", jsonData)
+          .then((response) => {
+            const created = response.data;
+            window.location.href = "/view/recipes/" + created.recipe.id;
+          })
+          .catch((error) => {
+            if (error.response.status === 401) {
+              alert("로그인이 필요합니다!");
+              window.location.href = "/view/login";
+            } else {
+              console.log("error! : ", error);
+              alert(error);
+            }
+          });
+      });
+    </script>
+  </body>
+</html>

@@ -44,12 +44,17 @@ public class RecipeRepositoryImpl implements RecipeRepository {
 
     @Override
     public List<RecipeDocument> findByAuthor(User author) {
-        return recipeDocumentRepository.findByAuthorId(author.getId());
+        return recipeDocumentRepository.findTop100ByAuthorIdOrderByCreatedAt(author.getId());
     }
 
     @Override
     public List<RecipeDocument> findByTagNames(List<TagName> tagNames) {
         return recipeQueryService.findByTagNames(tagNames);
+    }
+
+    @Override
+    public List<RecipeDocument> getFeatured() {
+        return recipeQueryService.getTopRecipe(10);
     }
 
     @Override

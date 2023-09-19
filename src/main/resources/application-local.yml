@@ -1,4 +1,6 @@
 spring:
+  mvc:
+    static-path-pattern: /view/**
   kafka:
     bootstrap-servers: localhost:9092
     group-id: recipetory-local

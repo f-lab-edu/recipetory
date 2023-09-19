@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>레시피토리</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9"
+      crossorigin="anonymous"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  </head>
+  <body class="d-flex flex-column min-vh-100">
+    <header class="text-center p-4" style="background-color: #d1e7dc">
+      <h1 class="display-4">
+        <img
+          width="60"
+          height="60"
+          src="/view/logo.png"
+          alt="external-Salad-international-food-goofy-flat-kerismaker"
+        />
+        <a href="/" style="color: black; text-decoration: none">RECIPETORY</a>
+      </h1>
+      <p class="lead">맛있는 레시피를 공유하고 즐기세요!</p>
+      <div class="justify-content-center row">
+        <div class="col-md-8">
+          <form id="recipe-serach-form" action="/view/recipes" method="get">
+            <div class="input-group mb-3 px-5">
+              <input
+                type="text"
+                class="form-control"
+                placeholder="검색하고 싶은 레시피 제목을 작성하세요."
+                name="q"
+              />
+              <button
+                class="btn btn btn-outline-success"
+                type="submit"
+                id="search-button"
+              >
+                🔍 검색하기
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <ul
+          class="nav nav-fill mt-3 col-sm-10 col-lg-6"
+          id="recipetory-menu"
+        ></ul>
+      </div>
+    </header>
+
+    <div class="justify-content-center px-3 my-4 row">
+      <div id="user-container" class="col-8 col-lg-6"></div>
+    </div>
+
+    <div class="justify-content-center px-3 mb-5">
+      <section class="container my-3 d-flex flex-column align-items-center">
+        <ul class="nav nav-underline nav-fill mx-3">
+          <li class="nav-item mx-4">
+            <button
+              class="nav-link"
+              style="color: #0c432a"
+              aria-current="page"
+              type="button"
+              onclick="showRecipeList()"
+            >
+              <h3>작성 레시피</h3>
+            </button>
+          </li>
+          <li class="nav-item mx-4">
+            <button
+              class="nav-link"
+              style="color: #0c432a"
+              aria-current="page"
+              type="button"
+              onclick="showBookMarkList()"
+            >
+              <h3>북마크함</h3>
+            </button>
+          </li>
+        </ul>
+      </section>
+      <div class="px-3 mb-4 container">
+        <section class="my-3 justify-content-center align-items-center">
+          <div
+            id="content-container"
+            class="d-flex justify-content-center row"
+          ></div>
+        </section>
+      </div>
+    </div>
+
+    <footer
+      class="text-center py-4 mt-auto"
+      style="background-color: #d1e7dc"
+      id="footer"
+    ></footer>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+      integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
+      integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
+      crossorigin="anonymous"
+    ></script>
+    <script src="/view/js/build-footer.js"></script>
+    <script src="/view/js/auth.js"></script>
+    <script src="/view/js/build-menu.js"></script>
+    <script src="/view/js/recipe.js"></script>
+    <script src="/view/js/build-reply.js"></script>
+    <script src="/view/js/build-tag.js"></script>
+    <script src="/view/js/bookmark.js"></script>
+    <script src="/view/js/recipe-list-card.js"></script>
+    <script>
+      (async () => {
+        const auth = await getAuth();
+        buildMenu(auth);
+      })();
+    </script>
+    <script>
+      const userParams = window.location.pathname.split("/");
+      const userId = userParams[userParams.length - 1];
+      var authorRecipes = undefined;
+      var bookMarkRecipes = undefined;
+    </script>
+    <script>
+      const createUserCard = (user) => {
+        const card = document.createElement("div");
+        card.classList.add("card", "mb-2");
+        card.innerHTML = `
+          <div class="card-body">
+            <h5 class="card-title">
+              ${user.name}
+            </h5>
+            <p class="card-text">${user.bio}</p>
+          </div>
+        `;
+        return card;
+      };
+
+      axios
+        .get("/" + userId)
+        .then(function (response) {
+          const user = response.data;
+          const container = document.querySelector("#user-container");
+
+          const userCard = createUserCard(user);
+          container.appendChild(userCard);
+        })
+        .catch(function (error) {
+          if (error.response != null && error.response.status === 404) {
+            alert("존재하지 않는 유저입니다!");
+          } else {
+            console.log("error fetching data:", error);
+          }
+        });
+    </script>
+    <script>
+      // 현재 페이지 유저가 작성한 레시피
+      axios
+        .get("/" + userId + "/recipes")
+        .then(function (response) {
+          authorRecipes = response.data.recipes;
+          const container = document.querySelector("#content-container");
+
+          if (authorRecipes.length) {
+            authorRecipes.forEach((recipe) => {
+              const recipeCard = createRecipeCard(recipe);
+              container.appendChild(recipeCard);
+            });
+          } else {
+            container.innerHTML = `
+              <p class="text-body-secondary text-center">
+                레시피가 존재하지 않습니다.
+              </p>
+          `;
+          }
+        })
+        .catch(function (error) {
+          console.log("error fetching data:", error);
+        });
+    </script>
+    <script>
+      const showRecipeList = () => {
+        const container = document.querySelector("#content-container");
+        while (container.firstChild) {
+          container.removeChild(container.firstChild);
+        }
+        if (!authorRecipes) {
+          axios
+            .get("/" + userId + "/recipes")
+            .then(function (response) {
+              authorRecipes = response.data.recipes;
+              const container = document.querySelector("#content-container");
+              if (authorRecipes.length) {
+                authorRecipes.forEach((recipe) => {
+                  const recipeCard = createRecipeCard(recipe);
+                  container.appendChild(recipeCard);
+                });
+              } else {
+                container.innerHTML = `
+                  <p class="text-body-secondary text-center">
+                     레시피가 존재하지 않습니다.
+                  </p>
+                `;
+              }
+            })
+            .catch(function (error) {
+              console.log("error fetching data:", error);
+            });
+        }
+
+        if (authorRecipes.length) {
+          authorRecipes.forEach((recipe) => {
+            const recipeCard = createRecipeCard(recipe);
+            container.appendChild(recipeCard);
+          });
+        } else {
+          container.innerHTML = `
+            <p class="text-body-secondary text-center">
+                레시피가 존재하지 않습니다.
+            </p>
+          `;
+        }
+      };
+
+      const showBookMarkList = async () => {
+        const container = document.querySelector("#content-container");
+        while (container.firstChild) {
+          container.removeChild(container.firstChild);
+        }
+        if (!bookMarkRecipes) {
+          bookMarkRecipes = await getBookMarksOfUser(userId);
+        }
+
+        if (bookMarkRecipes.length) {
+          bookMarkRecipes.forEach((recipe) => {
+            const recipeCard = createRecipeCard(recipe);
+            container.appendChild(recipeCard);
+          });
+        } else {
+          container.innerHTML = `
+                  <p class="text-body-secondary text-center">
+                     레시피가 존재하지 않습니다.
+                  </p>
+                `;
+        }
+      };
+    </script>
+  </body>
+</html>

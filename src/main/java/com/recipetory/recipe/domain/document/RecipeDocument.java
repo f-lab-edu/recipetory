@@ -8,6 +8,7 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.recipetory.recipe.domain.Recipe;
 import com.recipetory.recipe.domain.RecipeInfo;
 import com.recipetory.recipe.domain.RecipeStatistics;
+import com.recipetory.tag.domain.Tag;
 import com.recipetory.tag.domain.TagName;
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
@@ -67,6 +68,7 @@ public class RecipeDocument {
                 .recipeStatistics(recipe.getRecipeStatistics())
                 .steps(StepDocument.fromEntityList(recipe.getSteps()))
                 .ingredients(IngredientDocument.fromEntityList(recipe.getIngredients()))
+                .tags(recipe.getTags().stream().map(Tag::getTagName).toList())
                 .createdAt(recipe.getCreatedAt()).build();
     }
 }

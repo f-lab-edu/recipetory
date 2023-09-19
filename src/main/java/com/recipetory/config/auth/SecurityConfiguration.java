@@ -15,10 +15,10 @@ import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
-@Profile("server")
 public class SecurityConfiguration {
 
     private final CustomOAuth2UserService customOAuth2UserService;
+    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
     // since spring security 6.1.2 : MvcRequestMatcher.Builder
     // https://github.com/spring-projects/spring-security-samples/tree/main/servlet/java-configuration/authentication/preauth
@@ -28,12 +28,13 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(mvc.pattern("/check")).authenticated()
                         .requestMatchers(mvc.pattern("/profile")).authenticated()
-                        .requestMatchers(mvc.pattern(HttpMethod.POST,"/recipes")).hasAuthority(Role.USER.getKey())
+                        .requestMatchers(mvc.pattern(HttpMethod.POST,"/recipes")).authenticated()
+                        .requestMatchers(mvc.pattern(HttpMethod.POST,"/bookmarks/**")).authenticated()
                         .requestMatchers(mvc.pattern(HttpMethod.POST,"/bookmarks/**")).authenticated()
                         .requestMatchers(mvc.pattern(HttpMethod.DELETE,"/bookmarks/**")).authenticated()
                         .requestMatchers(mvc.pattern("/follow/**")).authenticated()
-                        .requestMatchers(mvc.pattern(HttpMethod.POST,"/tags/**")).hasAuthority(Role.USER.getKey())
-                        .requestMatchers(mvc.pattern(HttpMethod.DELETE,"/tags/**")).hasAuthority(Role.USER.getKey())
+                        .requestMatchers(mvc.pattern(HttpMethod.POST,"/tags/**")).authenticated()
+                        .requestMatchers(mvc.pattern(HttpMethod.DELETE,"/tags/**")).authenticated()
                         // 조회(GET)는 permitAll, 나머지는 authenticated()
                         .requestMatchers(mvc.pattern(HttpMethod.GET,"/comments/**")).permitAll()
                         .requestMatchers(mvc.pattern("/comments/**")).authenticated()
@@ -47,6 +48,7 @@ public class SecurityConfiguration {
                 .oauth2Login(oauth -> oauth
                         .userInfoEndpoint(userInfo ->
                                 userInfo.userService(customOAuth2UserService)))
+                .exceptionHandling(e -> e.authenticationEntryPoint(customAuthenticationEntryPoint))
                 .logout(logout -> logout
                         .logoutSuccessUrl("/")
                         .invalidateHttpSession(true));

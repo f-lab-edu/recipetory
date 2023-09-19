@@ -6,6 +6,7 @@ import com.recipetory.bookmark.presentation.dto.BookMarkDto;
 import com.recipetory.bookmark.presentation.dto.BookMarkListDto;
 import com.recipetory.config.auth.argumentresolver.LogInUser;
 import com.recipetory.config.auth.dto.SessionUser;
+import com.recipetory.recipe.presentation.dto.RecipeListDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,13 +24,12 @@ public class BookMarkController {
      * @return
      */
     @GetMapping("/{userId}/bookmarks")
-    public ResponseEntity<BookMarkListDto> findBookMarksOfUser(
+    public ResponseEntity<RecipeListDto> findBookMarksOfUser(
             @PathVariable("userId") Long userId) {
-        List<BookMark> foundBookMarks = bookMarkService
-                .findBookMarkByUserId(userId);
+        RecipeListDto foundBookMarks = bookMarkService
+                .findBookMarkRecipeByUserId(userId);
 
-        return ResponseEntity.ok(
-                BookMarkListDto.fromEntityList(foundBookMarks));
+        return ResponseEntity.ok(foundBookMarks);
     }
 
     @GetMapping("/bookmarks/{recipeId}")

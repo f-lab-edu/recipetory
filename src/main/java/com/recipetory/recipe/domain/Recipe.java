@@ -1,5 +1,6 @@
 package com.recipetory.recipe.domain;
 
+import com.recipetory.bookmark.domain.BookMark;
 import com.recipetory.ingredient.domain.RecipeIngredient;
 import com.recipetory.step.domain.Step;
 import com.recipetory.tag.domain.Tag;
@@ -50,6 +51,12 @@ public class Recipe extends BaseTimeEntity {
             mappedBy = "recipe",
             orphanRemoval = true)
     private List<RecipeIngredient> ingredients;
+
+    @OneToMany(targetEntity = BookMark.class,
+            cascade = CascadeType.REMOVE,
+            mappedBy = "recipe",
+            orphanRemoval = true)
+    private List<BookMark> bookMarks;
 
     @OneToMany(targetEntity = Tag.class,
             cascade = CascadeType.ALL,

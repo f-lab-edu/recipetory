@@ -7,8 +7,11 @@ import com.recipetory.user.presentation.dto.EditUserDto;
 import com.recipetory.user.presentation.dto.ProfileDto;
 import com.recipetory.user.presentation.dto.UserDto;
 import com.recipetory.user.presentation.dto.UserListDto;
+import com.recipetory.utils.exception.EntityNotFoundException;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
+    private final HttpSession httpSession;
 
     /**
      * path variable의 id에 해당하는 유저의 정보를 조회한다.
@@ -24,11 +28,15 @@ public class UserController {
      */
     @GetMapping("/{userId}")
     public ResponseEntity<UserDto> showUser(
-            @PathVariable("userId") Long userId) {
-        UserDto found = UserDto.fromEntity(
-                userService.getUserById(userId));
-
-        return ResponseEntity.ok(found);
+            @PathVariable("userId") String userId) {
+        try {
+            UserDto found = UserDto.fromEntity(
+                    userService.getUserById(Long.valueOf(userId)));
+            return ResponseEntity.ok(found);
+        } catch (NumberFormatException e) {
+            // Long이 아닌 입력
+            throw new EntityNotFoundException("User",userId);
+        }
     }
 
     /**
@@ -73,5 +81,18 @@ public class UserController {
     ) {
         UserListDto found = userService.findUserByNameContains(userName);
         return ResponseEntity.ok(found);
+    }
+
+    /**
+     * 현재 유저의 로그인 상태를 반환한다.
+     * @return
+     */
+    @GetMapping("/check-auth")
+    public ResponseEntity<SessionUser> checkAuthenticated() {
+        SessionUser logInUser = (SessionUser) httpSession.getAttribute("user");
+        if (logInUser == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        return ResponseEntity.ok(logInUser);
     }
 }
