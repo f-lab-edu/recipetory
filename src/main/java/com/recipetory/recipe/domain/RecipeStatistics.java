@@ -1,5 +1,6 @@
 package com.recipetory.recipe.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.*;
@@ -48,9 +49,5 @@ public class RecipeStatistics {
     }
     public void subtractBookMarkCount() {
         this.bookMarkCount -= 1;
-    }
-
-    public String getRatingFormat() {
-        return String.format("%.1f",ratings / 10.0);
     }
 }

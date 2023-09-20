@@ -13,12 +13,15 @@ spring:
     elasticsearch:
       hosts: 10.178.0.10,10.178.0.11
       port: 9200
+  redis:
+    host: 10.146.0.2
+    port: 6379
   jpa:
     properties:
       hibernate:
         default_batch_fetch_size: 1000
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
   security:
     oauth2:
       client:
