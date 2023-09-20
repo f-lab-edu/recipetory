@@ -16,6 +16,8 @@ spring:
   redis:
     host: 10.146.0.2
     port: 6379
+  session:
+    store-type: redis
   jpa:
     properties:
       hibernate:
@@ -36,13 +38,13 @@ spring:
             client-name: naver
             client-id: xCOoChU6Z_Y0mqFWAigP
             client-secret: wTKSqsL3gH
-            redirect-uri: http://34.64.192.158/login/oauth2/code/naver
+            redirect-uri: http://34.84.6.143/login/oauth2/code/naver
             authorization-grant-type: authorization_code
             scope: email,nickname
           kakao:
             client-name: kakao
             client-id: 440b9d834501c4337ae0d9c753156417
-            redirect-uri: http://34.64.192.158/login/oauth2/code/kakao
+            redirect-uri: http://34.84.6.143/login/oauth2/code/kakao
             authorization-grant-type: authorization_code
             scope: account_email,profile_nickname
         provider:

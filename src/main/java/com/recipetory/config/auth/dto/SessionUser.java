@@ -4,9 +4,11 @@ import com.recipetory.user.domain.User;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.io.Serializable;
+
 @Getter
 @Builder
-public class SessionUser {
+public class SessionUser implements Serializable {
     private String name;
     private String email;
     private Long id;
