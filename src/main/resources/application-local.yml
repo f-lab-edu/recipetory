@@ -13,6 +13,11 @@ spring:
     elasticsearch:
       hosts: localhost
       port: 9200
+  redis:
+    host: localhost
+    port: 6379
+  session:
+    store-type: redis
   jpa:
     properties:
       hibernate:

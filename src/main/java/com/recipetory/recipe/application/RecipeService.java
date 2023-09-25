@@ -17,6 +17,8 @@ import com.recipetory.user.domain.exception.NotOwnerException;
 import com.recipetory.utils.exception.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -93,6 +95,8 @@ public class RecipeService {
      * @param recipeId
      */
     @Transactional
+    // cache에 저장된 데이터라면 cache update
+    @CacheEvict(value = "getFeaturedRecipes", cacheManager = "redisCacheManager")
     public void deleteRecipeById(Long recipeId, String logInEmail) {
         // 레시피 작성자만 삭제 가능
         Recipe found = recipeRepository.findById(recipeId)
@@ -121,6 +125,7 @@ public class RecipeService {
      * index에 제공할 추천 레시피를 반환한다.
      * @return featured(추천) recipe
      */
+    @Cacheable(value = "getFeaturedRecipes", cacheManager = "redisCacheManager")
     @Transactional(readOnly = true)
     public RecipeListDto getFeaturedRecipes() {
         List<RecipeDocument> featured = recipeRepository.getFeatured();
