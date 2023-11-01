@@ -1,21 +1,23 @@
-# 🥘 [RECIPETORY](http://141.164.62.254)
+# 🥘 RECIPETORY
 **Recipe**(레시피)와 Reposi**tory**(리포지토리)의 합성어로, 회원들이 레시피를 공유하고
-리뷰와 댓글을 통해 소통할 수 있는 레시피 공유 사이트입니다. 기본적인 인증, 컨텐츠에 대한 CRUD,
-알림 기능이 존재합니다.
+리뷰와 댓글을 통해 소통할 수 있는 레시피 공유 사이트입니다. 기본적인 소셜 인증, 컨텐츠에 대한 CRUD,
+알림 기능 등이 존재합니다.
 
 - 자바 버전 : JAVA 17, Spring Boot 3.1.2
-- 서버 스펙 : vCPU 2개, 1GB 메모리(GCP e2-micro) Scale-out 구성
+- 서버 스펙 : vCPU 2코어, 1GB 메모리(GCP e2-micro) Scale-out 구성
 - 가용 TPS : 600
 
 <br>
 
 # 🎯 프로젝트 목표
 
-- 단순히 구현에서 끝나지 않고, 부하 테스트를 통해 사용자 트래픽이 몰려도 **안정적인 서비스를 제공**하는 것을 목표로 합니다.
-- **객체지향**적인 설계와 테스트하기 좋은 코드를 달성하도록 노력합니다.
-- 각 도메인 기능에 대한 단위 **테스트 코드**를 작성합니다.
-- 기획 및 설계부터 클라우드 서버에 배포 자동화까지 어플리케이션 서비스가 제작되는 일련의 과정을 실습합니다.
-- UI와 자바스크립트 API 호출 코드를 직접 작성하여 사용자와 협업자 관점에서 서버 코드를 바라볼 수 있도록 합니다.
+- 단순히 구현이 아닌 부하 테스트를 통해 트래픽이 몰리는 상황에서도 **안정적인 서비스를 제공**하는 것을 목표
+- RESTful한 API 설계
+- git flow 전략[(참고)](https://techblog.woowahan.com/2553/)을 활용한 브랜치 관리
+- **객체지향**적인 설계와 테스트하기 좋은 코드를 달성
+- 각 도메인 기능에 대한 단위 **테스트 코드**를 작성
+- 기획 및 설계부터 클라우드 서버 배포 자동화까지 어플리케이션 서비스가 제작되는 일련의 과정 실습
+- UI와 자바스크립트 API 호출 코드를 직접 작성하여 사용자와 협업자 관점에서 서버 코드 이용
 
 <br>
 
@@ -26,6 +28,7 @@
 - [검색 고도화를 위한 Elastic Search 사용 (2) : ElasticSearchClient 쿼리 작성](https://buchu-doodle.tistory.com/214)
 - [Artillery를 이용한 부하 테스트](https://buchu-doodle.tistory.com/210)
 - [다중 서버를 통한 TPS 개선 : 세션 인증 정보가 풀리는 문제](https://buchu-doodle.tistory.com/216)
+- [<단위 테스트>를 읽고 : 과연 테스트 코드가 잘 작성되었다고 할 수 있을까?](https://buchu-doodle.tistory.com/227)
 - [인덱스 페이지 구성하기 : ES 스크립트 작성과 캐싱을 이용한 성능 개선](https://buchu-doodle.tistory.com/215)
 - [Jenkins와 Docker를 이용한 CI/CD](https://buchu-doodle.tistory.com/211)
 
@@ -38,6 +41,10 @@
 
 ### 👩‍💻 사용자 요청 흐름
 ![image](https://github.com/f-lab-edu/recipetory/assets/69233405/a40e0a2b-1cb2-4ddb-b213-bcde8845b4f2)
+
+### 📮 컨텐츠 post시 시퀀스 다이어그램
+<img width="850" alt="image" src="https://github.com/f-lab-edu/recipetory/assets/69233405/48625317-0db0-4ce4-9f25-3c297fe3ed9d">
+
 
 
 <br>
